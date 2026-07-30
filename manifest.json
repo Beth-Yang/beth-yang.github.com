@@ -1,0 +1,14 @@
+{
+  "name": "Beth人生三万天",
+  "short_name": "Beth三万天",
+  "description": "三万天，好好过 · 每日成长陪伴（英语/投资/赚钱/吃饭）",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBFBFD",
+  "theme_color": "#6D28D9",
+  "icons": [
+    {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}

@@ -1,0 +1,6 @@
+# 把你的 GitHub 个人访问令牌(PAT)粘贴到 .gh-token 文件里（不要加引号/空格/换行）
+# 获取地址: https://github.com/settings/tokens  →  Generate new token (classic)
+# 勾选权限: repo (完整仓库读写)
+# 生成后复制 token，粘贴到同目录下的 .gh-token 文件中保存即可。
+# .gh-token 已被 .gitignore 忽略，不会被提交，安全。
+PASTE_YOUR_GITHUB_TOKEN_HERE

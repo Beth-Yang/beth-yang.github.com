@@ -2,839 +2,1183 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S.每日投研看板 · 汇总版 · 2026-07-29</title>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Beth人生三万天</title>
+<meta name="theme-color" content="#6D28D9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Beth三万天">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" href="icon.svg">
 <style>
-  :root{--bg:#fff;--panel:#fafbfc;--border:#e5e7eb;--border-strong:#d1d5db;--text:#1f2937;--text-soft:#4b5563;--text-mute:#6b7280;--text-faint:#9ca3af;--up:#dc2626;--up-soft:#fee2e2;--down:#059669;--down-soft:#d1fae5;--accent:#2563eb;--warn:#d97706;--warn-soft:#fef3c7;--shadow:0 1px 3px rgba(0,0,0,.04)}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.55}
-  header{position:fixed;top:0;left:0;right:0;height:60px;background:#fff;border-bottom:2px solid var(--accent);display:flex;align-items:center;padding:0 24px;z-index:100;box-shadow:var(--shadow)}
-  header .logo{font-size:20px;font-weight:700}
-  header .logo .s{color:var(--accent);font-size:24px}
-  header .date{margin-left:16px;padding:3px 12px;background:#eff6ff;color:var(--accent);border-radius:4px;font-size:12px;font-weight:500}
-  header .live{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:11px;color:var(--up);font-weight:500}
-  header .live .dot{width:6px;height:6px;border-radius:50%;background:var(--up);animation:pulse 2s infinite}
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-  header .src{margin-left:auto;font-size:11px;color:var(--text-faint)}
-  .layout{display:flex;min-height:100vh;padding-top:60px}
-  aside{position:fixed;top:60px;left:0;bottom:0;width:240px;background:#fff;border-right:1px solid var(--border);padding:16px 0;overflow-y:auto}
-  aside nav a{display:flex;align-items:center;gap:8px;padding:10px 18px;color:var(--text-soft);text-decoration:none;font-size:13px;border-left:3px solid transparent;transition:.15s}
-  aside nav a:hover{background:#f9fafb;color:var(--text);border-left-color:var(--accent)}
-  aside nav a.active{color:var(--accent);border-left-color:var(--accent);background:#eff6ff;font-weight:500}
-  aside .nav-group-title{padding:14px 18px 6px;font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
-  main{margin-left:240px;flex:1;padding:24px 32px 80px;max-width:1320px}
-  section{margin-bottom:36px;scroll-margin-top:80px}
-  section h2{font-size:18px;font-weight:600;margin:0 0 4px;padding-bottom:8px;border-bottom:2px solid var(--border-strong);display:flex;align-items:center;gap:10px}
-  section h2 .num{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 8px;background:var(--accent);color:#fff;border-radius:4px;font-size:12px}
-  section .sec-desc{font-size:12px;color:var(--text-mute);margin:4px 0 14px}
-  section .sec-src{display:inline-block;font-size:11px;color:var(--text-faint);margin-top:10px;padding:2px 8px;background:#f9fafb;border-radius:3px}
-  .grid{display:grid;gap:12px}
-  .grid-4{grid-template-columns:repeat(4,1fr)}
-  .grid-3{grid-template-columns:repeat(3,1fr)}
-  .grid-2{grid-template-columns:repeat(2,1fr)}
-  @media(max-width:1100px){.grid-4,.grid-3{grid-template-columns:repeat(2,1fr)}}
-  .card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:14px 16px;transition:.2s}
-  .card:hover{box-shadow:var(--shadow)}
-  .card .label{font-size:11px;color:var(--text-mute);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
-  .card .name{font-size:13px;font-weight:500;margin-bottom:5px;color:var(--text)}
-  .card .price{font-size:20px;font-weight:600;line-height:1.1}
-  .card .chg{font-size:13px;font-weight:500;margin-top:2px}
-  .card .meta{font-size:11px;color:var(--text-faint);margin-top:6px;padding-top:6px;border-top:1px dashed var(--border)}
-  .up{color:var(--up)}.down{color:var(--down)}.neutral{color:#6b7280}
-  .banner{background:linear-gradient(135deg,#eff6ff 0%,#f0fdf4 100%);border:1px solid #bfdbfe;border-radius:8px;padding:16px 22px;margin-bottom:18px}
-  .banner .bt{font-size:13px;color:var(--text-mute);margin-bottom:6px;font-weight:500}
-  .banner .bb{font-size:13px;line-height:1.7}
-  .banner .bb strong{color:var(--up)}
-  .stat-strip{display:flex;gap:0;background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:14px}
-  .stat-strip .stat{flex:1;padding:12px 18px;border-right:1px solid var(--border)}
-  .stat-strip .stat:last-child{border-right:none}
-  .stat-strip .stat .l{font-size:11px;color:var(--text-mute);text-transform:uppercase;letter-spacing:.3px}
-  .stat-strip .stat .v{font-size:18px;font-weight:600;margin-top:2px}
-  .stat-strip .stat .sub{font-size:11px;color:var(--text-faint);margin-top:2px}
-  table{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border:1px solid var(--border);border-radius:6px;overflow:hidden}
-  table th,table td{padding:9px 12px;text-align:right;border-bottom:1px solid var(--border)}
-  table th{background:#f9fafb;color:var(--text-mute);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.3px}
-  table td.l,table th.l{text-align:left}
-  table tr:last-child td{border-bottom:none}
-  table tr:hover{background:#f9fafb}
-  .track-card{background:#fff;border:1px solid var(--border);border-left:5px solid var(--accent);border-radius:8px;padding:18px 22px;margin-bottom:14px}
-  .track-card .tc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .track-card .tc-name{font-size:16px;font-weight:600}
-  .track-card .tc-tag{font-size:11px;padding:2px 10px;border-radius:10px}
-  .tc-tag.confirmed{background:var(--down-soft);color:var(--down)}
-  .tc-tag.unconfirmed{background:var(--warn-soft);color:var(--warn)}
-  .track-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px}
-  @media(max-width:1100px){.track-grid{grid-template-columns:1fr}}
-  .track-block{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:12px 14px}
-  .track-block .tb-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;padding-bottom:4px;border-bottom:1px dashed var(--border)}
-  .track-block ul{margin:4px 0 0 16px;padding:0;font-size:12px;line-height:1.7;color:var(--text-soft)}
-  .track-block ul li{margin:2px 0}
-  .track-block ul li strong{color:var(--up)}
-  .pick-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:18px 22px;margin-bottom:14px;display:grid;grid-template-columns:80px 1fr;gap:18px}
-  .pick-rank{background:var(--accent);color:#fff;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600}
-  .pick-rank.tech{background:#7c3aed}
-  .pick-rank .pr-num{font-size:28px;line-height:1}
-  .pick-rank .pr-lab{font-size:10px;opacity:.9;margin-top:4px;letter-spacing:.5px}
-  .pick-body .pb-head{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;flex-wrap:wrap}
-  .pick-body .pb-name{font-size:18px;font-weight:600}
-  .pick-body .pb-code{font-size:12px;color:var(--text-faint)}
-  .pick-body .pb-tag{font-size:11px;padding:2px 10px;border-radius:10px}
-  .pick-body .pb-chg{font-size:14px;font-weight:600;margin-left:auto}
-  .pick-body .reasons .r-row{display:grid;grid-template-columns:80px 1fr;gap:8px;padding:4px 0;font-size:12px;line-height:1.6;border-bottom:1px dashed var(--border)}
-  .pick-body .reasons .r-row:last-child{border-bottom:none}
-  .pick-body .reasons .r-k{color:var(--text-mute);font-weight:500}
-  .pick-body .reasons .r-v{color:var(--text)}
-  .pick-body .reasons .r-v strong{color:var(--up)}
-  .pick-body .risks{margin-top:8px;padding:8px 12px;background:var(--warn-soft);border-radius:4px;font-size:12px;color:#92400e}
-  .pick-body .risks strong{color:var(--warn)}
-  .pick-body .src{display:block;font-size:10px;color:var(--text-faint);margin-top:6px}
-  .news-item{padding:10px 14px;background:#fff;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;border-left:3px solid var(--accent)}
-  .news-item .ni-time{font-size:11px;color:var(--text-faint)}
-  .news-item .ni-title{font-size:13px;font-weight:500;margin:4px 0}
-  .news-item .ni-src{font-size:11px;color:var(--text-mute)}
-  .anomaly-item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 14px;background:#fff;border:1px solid var(--border);border-radius:6px;margin-bottom:8px}
-  .anomaly-item .ai-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
-  .ai-tag.tag-up{background:var(--up-soft);color:var(--up)}
-  .ai-tag.tag-down{background:var(--down-soft);color:var(--down)}
-  .ai-tag.tag-vol{background:#fef3c7;color:#92400e}
-  .anomaly-item .ai-code{font-size:12px;color:var(--text-faint);font-family:monospace}
-  .anomaly-item .ai-name{font-size:13px;font-weight:500}
-  .anomaly-item .ai-chg{font-size:14px;font-weight:600;text-align:right}
-  .archive-item{padding:10px 14px;background:#fff;border:1px solid var(--border);border-radius:6px;margin-bottom:8px;display:grid;grid-template-columns:120px 1fr;gap:12px;font-size:12px}
-  .archive-item .ar-time{color:var(--text-faint);font-weight:500}
-  .archive-item .ar-content{color:var(--text-soft)}
-  .archive-item .ar-content strong{color:var(--up)}
-  .archive-item.tech{border-left:3px solid #7c3aed}
-  .archive-item.normal{border-left:3px solid var(--accent)}
-  .data-arch{background:#fff;border:1px solid var(--border);border-radius:8px;padding:20px 24px;margin-bottom:20px}
-  .data-arch h3{margin:0 0 16px;font-size:14px;color:var(--text)}
-  .arch-flow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-  .arch-col{padding:14px;border-radius:6px;background:var(--panel);border:1px solid var(--border)}
-  .arch-col .ac-title{font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text);text-align:center}
-  .arch-col .ac-item{font-size:11px;padding:4px 8px;background:#fff;border-radius:4px;margin-bottom:4px;border:1px solid var(--border)}
-  .arch-col.primary .ac-item{border-left:3px solid var(--accent)}
-  .arch-col.fund .ac-item{border-left:3px solid var(--up)}
-  .arch-col.backup .ac-item{border-left:3px solid var(--text-faint)}
-  .schedule-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px}
-  .schedule-table th{background:var(--accent);color:#fff;padding:8px 12px;text-align:left;font-weight:500;font-size:11px}
-  .schedule-table td{padding:10px 12px;border-bottom:1px solid var(--border)}
-  .schedule-table td.time{font-weight:600;color:var(--accent);font-family:monospace}
-  .footnote{font-size:11px;color:var(--text-faint);border-top:1px solid var(--border);padding-top:14px;margin-top:36px;line-height:1.7}
-  .footnote a{color:var(--accent);text-decoration:none}
+  :root{
+    --purple:#6D28D9; --purple-deep:#4C1D95;
+    --ink:#111827; --ink-2:#374151; --ink-soft:#6B7280;
+    --line:#E5E7EB; --card:#FFFFFF; --bg:#FBFBFD;
+    --radius:16px; --shadow:0 1px 2px rgba(17,24,39,.04),0 8px 24px rgba(17,24,39,.05);
+    --shadow-lg:0 4px 12px rgba(77,29,149,.10),0 20px 48px rgba(77,29,149,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink-2);line-height:1.6;-webkit-font-smoothing:antialiased;}
+
+  .topbar{position:fixed;top:0;left:0;right:0;height:64px;z-index:50;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 28px;}
+  .menu-toggle{display:none;width:40px;height:40px;border:none;background:transparent;color:var(--purple-deep);font-size:22px;cursor:pointer;margin-right:6px;align-items:center;justify-content:center;border-radius:8px;}
+  .menu-toggle:hover{background:var(--bg);}
+  .brand{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .brand-logo{width:38px;height:38px;border-radius:11px;background:var(--purple);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;}
+  .brand-name{font-size:20px;font-weight:800;color:var(--purple-deep);letter-spacing:.5px;}
+  .brand-sub{font-size:12px;color:var(--ink-soft);margin-left:4px;}
+  .topbar-right{margin-left:auto;display:flex;align-items:center;gap:14px;}
+  .day-counter{font-size:13px;color:var(--purple-deep);font-weight:700;padding:7px 16px;background:#fff;border:1.5px solid var(--purple);border-radius:20px;}
+  .date-chip{font-size:13px;color:var(--ink-soft);}
+
+  .layout{display:flex;padding-top:64px;min-height:100vh;}
+  .sidebar{width:248px;position:fixed;top:64px;bottom:0;left:0;background:#fff;border-right:1px solid var(--line);padding:24px 16px;overflow-y:auto;}
+  .nav-group-title{font-size:11px;font-weight:700;color:var(--ink-soft);text-transform:uppercase;letter-spacing:1.2px;padding:0 12px 12px;}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:14px 14px;border-radius:10px;cursor:pointer;color:var(--ink);font-size:15px;font-weight:600;transition:all .18s ease;margin-bottom:6px;border:1.5px solid transparent;background:transparent;text-align:left;width:100%;font-family:inherit;}
+  .nav-item:hover{border-color:var(--purple);color:var(--purple-deep);}
+  .nav-item.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+  .nav-item .ico{font-size:18px;width:24px;text-align:center;flex-shrink:0;}
+
+  .main{flex:1;margin-left:248px;padding:32px 40px 60px;max-width:100%;min-height:calc(100vh - 64px);}
+  .page{display:none;animation:fade .35s ease;}
+  .page.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+  #page-home{display:none;}
+  #page-home.active{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px - 92px);text-align:center;padding:40px;}
+  .home-wrap{max-width:760px;}
+  .home-date{font-size:14px;color:var(--ink-soft);margin-bottom:32px;letter-spacing:1px;}
+  .home-quote-mark{font-size:72px;color:var(--purple);opacity:.35;line-height:.6;font-family:Georgia,serif;margin-bottom:8px;}
+  .home-quote-text{font-size:34px;font-weight:700;color:var(--ink);line-height:1.55;letter-spacing:.5px;margin-bottom:40px;}
+  .home-actions{display:flex;gap:12px;justify-content:center;align-items:center;}
+  .home-change{background:transparent;border:none;cursor:pointer;font-size:13px;color:var(--ink-soft);font-family:inherit;padding:8px 18px;opacity:.5;transition:all .2s ease;border-radius:20px;}
+  .home-change:hover{opacity:1;color:var(--purple-deep);background:#fff;}
+
+  .page-head{margin-bottom:30px;}
+  .page-title{font-size:28px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:12px;letter-spacing:.3px;}
+  .page-title .accent{color:var(--purple);}
+  .page-desc{font-size:14px;color:var(--ink-soft);margin-top:8px;padding-left:2px;}
+
+  .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow);padding:26px;margin-bottom:22px;}
+  .card-title{font-size:17px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .card-title .dot{width:8px;height:8px;border-radius:50%;background:var(--purple);}
+  .card-title .tag-ml{margin-left:auto;font-size:12px;color:var(--ink-soft);font-weight:500;}
+
+  .btn{display:inline-flex;align-items:center;gap:7px;cursor:pointer;padding:10px 18px;border-radius:10px;border:none;font-size:14px;font-weight:700;font-family:inherit;transition:all .18s ease;}
+  .btn-primary{background:var(--purple);color:#fff;}
+  .btn-primary:hover{background:var(--purple-deep);}
+  .btn-ghost{background:#fff;color:var(--purple-deep);border:1.5px solid var(--purple);}
+  .btn-ghost:hover{background:var(--purple);color:#fff;}
+  .btn-sm{padding:7px 13px;font-size:13px;}
+
+  /* 英语 - 素材切换 */
+  .eng-tabs{display:flex;gap:10px;margin-bottom:22px;}
+  .eng-tab{padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);transition:all .18s;font-family:inherit;}
+  .eng-tab.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+  .eng-pane{display:none;}
+  .eng-pane.active{display:block;}
+
+  /* 英语 - 音频播放器 */
+  .audio-player{background:#fff;border:1.5px solid var(--purple);border-radius:14px;padding:22px;}
+  .ep-info{margin-bottom:18px;}
+  .ep-title{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:4px;}
+  .ep-meta{font-size:13px;color:var(--ink-soft);}
+  .seek-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+  .seek-row span{font-size:12px;color:var(--ink-soft);min-width:36px;font-variant-numeric:tabular-nums;}
+  #seekBar{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--line);outline:none;cursor:pointer;}
+  #seekBar::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--purple);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+  #seekBar::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--purple);cursor:pointer;border:2px solid #fff;}
+  .control-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:18px;}
+  .ac-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--purple);cursor:pointer;background:#fff;color:var(--purple-deep);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+  .ac-btn:hover{background:var(--purple);color:#fff;}
+  .ac-main{width:56px;height:56px;background:var(--purple);color:#fff;border-color:var(--purple);font-size:20px;}
+  .ac-main:hover{background:var(--purple-deep);}
+  .speed-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;padding-top:16px;border-top:1px dashed var(--line);}
+  .spd-label{font-size:13px;font-weight:700;color:var(--ink-soft);margin-right:4px;}
+  .spd{padding:6px 13px;border-radius:8px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+  .spd:hover{border-color:var(--purple);color:var(--purple-deep);}
+  .spd.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+  .audio-fallback{margin-top:16px;padding-top:16px;border-top:1px dashed var(--line);}
+  .audio-status{font-size:12px;color:var(--ink-soft);margin-top:10px;text-align:center;}
+
+  .sentence{padding:18px 20px;border-radius:12px;margin-bottom:10px;cursor:pointer;border:1.5px solid transparent;transition:all .18s ease;background:#fff;}
+  .sentence:hover{border-color:var(--purple);}
+  .sentence.active{background:#fff;border-color:var(--purple);box-shadow:0 0 0 3px rgba(109,40,217,.08);}
+  .sentence .en{font-size:17px;color:var(--ink);line-height:1.6;margin-bottom:6px;}
+  .sentence .en .word{cursor:pointer;border-radius:4px;padding:0 2px;transition:background .15s;}
+  .sentence .en .word:hover{background:rgba(109,40,217,.18);}
+  .sentence .zh{font-size:14px;color:var(--ink-soft);}
+  .sentence.active .en{color:var(--purple-deep);font-weight:700;}
+  .player-controls{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px;}
+  .pc-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--purple);cursor:pointer;background:#fff;color:var(--purple-deep);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+  .pc-btn:hover{background:var(--purple);color:#fff;}
+  .pc-btn:disabled{opacity:.3;cursor:not-allowed;border-color:var(--line);color:var(--ink-soft);}
+  .pc-main{width:56px;height:56px;background:var(--purple);color:#fff;border-color:var(--purple);font-size:22px;}
+  .progress-line{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden;max-width:200px;}
+  .progress-fill{height:100%;background:var(--purple);border-radius:3px;transition:width .3s;}
+
+  .tip-box{background:#fff;border-left:3px solid var(--purple);border-radius:0 12px 12px 0;padding:16px 20px;margin-bottom:18px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .tip-box .tip-label{font-size:12px;color:var(--purple-deep);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+  .tip-box p{font-size:14px;color:var(--ink-2);}
+  .tip-box b{color:var(--ink);}
+
+  /* 课程内容 / 文案样式 */
+  .lesson h4{font-size:15px;font-weight:800;color:var(--purple-deep);margin:16px 0 8px;}
+  .lesson h4:first-child{margin-top:0;}
+  .lesson p{font-size:14px;color:var(--ink-2);line-height:1.85;margin-bottom:8px;}
+  .lesson ul,.lesson ol{margin:0 0 10px 22px;font-size:14px;color:var(--ink-2);line-height:1.85;}
+  .lesson li{margin-bottom:4px;}
+  .lesson b{color:var(--ink);}
+  .kp{margin-top:14px;padding:12px 16px;background:#fff;border:1.5px solid var(--purple);border-radius:10px;font-size:13.5px;color:var(--purple-deep);font-weight:600;}
+  .copy-box{white-space:pre-line;background:#fff;border:1px solid var(--line);border-left:3px solid var(--purple);border-radius:0 10px 10px 0;padding:16px 18px;font-size:14px;color:var(--ink-2);line-height:1.9;}
+  .tpl-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line);align-items:flex-start;}
+  .tpl-row:last-child{border-bottom:none;}
+  .tpl-formula{font-size:12px;color:#fff;background:var(--purple);padding:4px 10px;border-radius:6px;font-weight:700;flex-shrink:0;white-space:nowrap;}
+  .tpl-ex{font-size:14px;color:var(--ink);line-height:1.6;}
+  .action-box{background:#fff;border:1.5px solid var(--purple);border-radius:12px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;}
+  .action-box .ab-icon{font-size:22px;flex-shrink:0;}
+  .action-box .ab-text{font-size:14px;color:var(--ink-2);line-height:1.8;}
+
+  .word-popup{position:fixed;z-index:200;background:#fff;border-radius:12px;box-shadow:var(--shadow-lg);padding:18px 22px;min-width:260px;max-width:340px;border:1.5px solid var(--purple);display:none;}
+  .word-popup .wp-word{font-size:22px;font-weight:800;color:var(--purple-deep);}
+  .word-popup .wp-phonetic{font-size:14px;color:var(--ink-soft);margin:2px 0 10px;font-style:italic;}
+  .word-popup .wp-meaning{font-size:14px;color:var(--ink-2);line-height:1.6;}
+  .word-popup .wp-save{margin-top:12px;}
+
+  .notes-list{display:flex;flex-direction:column;gap:8px;}
+  .note-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#fff;border-radius:10px;border:1px solid var(--purple);}
+  .note-item .nw{font-weight:800;color:var(--purple-deep);}
+  .note-item .nm{font-size:13px;color:var(--ink-2);flex:1;}
+  .note-item .del{cursor:pointer;color:var(--ink-soft);font-size:18px;}
+  .note-item .del:hover{color:var(--purple-deep);}
+  .empty-note{text-align:center;color:var(--ink-soft);font-size:13px;padding:24px;}
+
+  /* 投资 */
+  .phase-tabs{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;}
+  .phase-tab{padding:10px 18px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:700;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);transition:all .18s;font-family:inherit;}
+  .phase-tab.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+  .phase-tab:hover:not(.active){border-color:var(--purple);color:var(--purple-deep);}
+  .timeline{position:relative;padding-left:28px;}
+  .timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--line);}
+  .tl-item{position:relative;margin-bottom:20px;}
+  .tl-item::before{content:"";position:absolute;left:-24px;top:4px;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--line);}
+  .tl-item.done::before{background:var(--purple);border-color:var(--purple);}
+  .tl-item.current::before{background:var(--purple);border-color:var(--purple);box-shadow:0 0 0 5px rgba(109,40,217,.15);}
+  .tl-week{font-size:13px;color:var(--purple-deep);font-weight:800;margin-bottom:3px;}
+  .tl-title{font-size:15.5px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+  .tl-content{font-size:14px;color:var(--ink-soft);line-height:1.7;}
+  .tl-content b{color:var(--ink);font-weight:600;}
+  .res-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  .res-item{padding:16px;border-radius:12px;background:#fff;border:1px solid var(--purple);}
+  .res-item .ri-icon{font-size:22px;margin-bottom:8px;}
+  .res-item .ri-cat{font-size:12px;color:var(--purple-deep);font-weight:800;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;}
+  .res-item ul{list-style:none;}
+  .res-item li{font-size:13.5px;color:var(--ink-2);padding:5px 0;}
+  .res-item li a{color:var(--purple-deep);text-decoration:none;font-weight:600;border-bottom:1px dashed var(--purple);}
+  .res-item li a:hover{opacity:.7;}
+  .progress-overview{display:flex;gap:24px;align-items:center;margin-bottom:8px;}
+  .ring{width:120px;height:120px;flex-shrink:0;position:relative;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring-num{font-size:24px;font-weight:800;color:var(--purple-deep);}
+  .ring-label{font-size:11px;color:var(--ink-soft);}
+  .tv-box{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:14px;}
+
+  /* 小红书 */
+  .cover-preview{width:100%;aspect-ratio:3/4;max-width:280px;border-radius:14px;background:var(--purple);background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:20px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow-lg);}
+  .cover-preview::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(76,29,149,.25) 0%,rgba(76,29,149,.82) 100%);}
+  .cover-preview .cv-tag{position:absolute;top:14px;left:14px;font-size:11px;background:rgba(255,255,255,.25);padding:3px 9px;border-radius:8px;backdrop-filter:blur(4px);z-index:2;}
+  .cover-preview .cv-title{font-size:22px;font-weight:800;line-height:1.3;text-shadow:0 2px 8px rgba(0,0,0,.4);position:relative;z-index:2;}
+  .cover-preview .cv-sub{font-size:13px;margin-top:6px;opacity:.95;position:relative;z-index:2;}
+  .breakdown-grid{display:grid;grid-template-columns:280px 1fr;gap:24px;}
+  .bd-dim{margin-bottom:18px;}
+  .bd-dim-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .bd-dim-icon{width:28px;height:28px;border-radius:8px;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0;}
+  .bd-dim-title{font-size:15px;font-weight:800;color:var(--ink);}
+  .bd-dim-body{font-size:14px;color:var(--ink-soft);line-height:1.75;padding-left:36px;}
+  .bd-dim-body b{color:var(--purple-deep);}
+  .formula-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:8px;}
+  .formula-card{padding:16px;border-radius:12px;background:#fff;border:1px solid var(--purple);}
+  .formula-card .fc-eq{font-size:15px;font-weight:800;color:var(--purple-deep);margin-bottom:4px;}
+  .formula-card .fc-result{font-size:12px;color:var(--ink-soft);}
+
+  /* 吃饭 */
+  .recipe-hero{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+  .recipe-img{aspect-ratio:4/3;border-radius:var(--radius);overflow:hidden;background:#fff;border:1.5px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;}
+  .recipe-img img{width:100%;height:100%;object-fit:cover;display:none;}
+  .recipe-img .emoji-fb{position:absolute;}
+  .recipe-head h3{font-size:24px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .recipe-meta{display:flex;gap:14px;font-size:13px;color:var(--ink-soft);margin-bottom:14px;flex-wrap:wrap;}
+  .recipe-meta span{display:flex;align-items:center;gap:5px;}
+  .rating{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--purple-deep);font-weight:800;}
+  .stars{color:var(--purple);letter-spacing:2px;}
+  .spice-toggle{display:inline-flex;background:#fff;border-radius:12px;padding:4px;border:1.5px solid var(--purple);}
+  .spice-toggle button{padding:9px 22px;border:none;background:transparent;cursor:pointer;border-radius:9px;font-size:14px;font-weight:700;color:var(--ink-soft);font-family:inherit;transition:all .18s;}
+  .spice-toggle button.active{background:var(--purple);color:#fff;}
+  .ingredients{margin-bottom:6px;}
+  .ing-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;}
+  .ing-row:last-child{border-bottom:none;}
+  .ing-name{color:var(--ink);}
+  .ing-amount{color:var(--purple-deep);font-weight:700;}
+  .steps{counter-reset:step;}
+  .step{display:flex;gap:14px;margin-bottom:16px;}
+  .step-num{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:var(--purple);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .step-text{font-size:14.5px;color:var(--ink-2);line-height:1.7;padding-top:3px;}
+
+  .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--purple-deep);color:#fff;padding:12px 22px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .3s;z-index:300;box-shadow:var(--shadow-lg);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media(max-width:920px){
+    .menu-toggle{display:flex;}
+    .sidebar{transform:translateX(-100%);transition:transform .25s ease;box-shadow:var(--shadow-lg);}
+    .sidebar.open{transform:translateX(0);}
+    .topbar{padding:0 14px;}
+    .brand-sub{display:none;}
+    .main{margin-left:0;padding:20px 16px 50px;}
+    .card{padding:20px;}
+    .page-title{font-size:22px;}
+    #page-home.active{padding:24px;}
+    .home-quote-text{font-size:22px;line-height:1.5;}
+    .home-quote-mark{font-size:56px;}
+    .breakdown-grid{grid-template-columns:1fr;}
+    .recipe-hero{grid-template-columns:1fr;}
+    .res-grid{grid-template-columns:1fr;}
+    .formula-grid{grid-template-columns:1fr;}
+    .bd-dim-body{padding-left:0;}
+    .cover-preview{max-width:100%;}
+  }
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--purple);}
 </style>
 </head>
 <body>
 
-<header>
-  <span class="logo"><span class="s">S.</span>每日投研看板</span>
-  <span class="date">2026-07-29 · 周三盘中</span>
-  <span class="live"><span class="dot"></span>LIVE · 11:13</span>
-  <span class="src">数据源：同花顺 Financial-API（主）+ a-stock-data（资金面）+ westock-data（备用）</span>
+<header class="topbar">
+  <button class="menu-toggle" onclick="toggleSidebar()" aria-label="菜单">☰</button>
+  <div class="brand" onclick="go('home')">
+    <div class="brand-logo">B</div>
+    <div><span class="brand-name">Beth人生三万天</span><span class="brand-sub">· 三万天，好好过</span></div>
+  </div>
+  <div class="topbar-right">
+    <span class="date-chip" id="dateChip">--</span>
+    <span class="day-counter">人生倒数第 17967 天</span>
+  </div>
 </header>
 
 <div class="layout">
-<aside>
-  <nav>
-    <div class="nav-group-title">实时行情</div>
-    <a href="#sec-overview" class="active">① 大盘概览</a>
-    <a href="#sec-capital">② 资金主线</a>
-    <div class="nav-group-title">行业 & 风格</div>
-    <a href="#sec-heatmap">③ 行业热力网格</a>
-    <a href="#sec-fundflow">④ 主力资金排行</a>
-    <a href="#sec-rotation">⑤ 风格轮动</a>
-    <a href="#sec-northbound">⑥ 北向资金动向</a>
-    <a href="#sec-judgment">⑦ 行业配置研判</a>
-    <div class="nav-group-title">推荐板块</div>
-    <a href="#sec-lowtrack">⑧ 低位赛道（非科技）</a>
-    <a href="#sec-techstock">⑨ 科技股推荐</a>
-    <a href="#sec-stockpick">⑩ 三只股票推荐</a>
-    <div class="nav-group-title">新增模块</div>
-    <a href="#sec-news">⭐ 今日重磅资讯</a>
-    <a href="#sec-anomaly">⭐ 成交量异动</a>
-    <a href="#sec-individual">⭐ 个股异动提醒</a>
-    <a href="#sec-calendar">⭐ 交易日历</a>
-    <div class="nav-group-title">辅助</div>
-    <a href="#sec-arch">数据架构 & 推送计划</a>
-    <a href="#sec-footnote">数据来源 & 免责</a>
-  </nav>
-</aside>
+  <aside class="sidebar">
+    <div class="nav-group-title">板块</div>
+    <button class="nav-item" data-page="english"><span class="ico">📖</span><span>英语学了吗</span></button>
+    <button class="nav-item" data-page="invest"><span class="ico">📈</span><span>投资学了吗</span></button>
+    <button class="nav-item" data-page="xhs"><span class="ico">📕</span><span>赚钱了吗</span></button>
+    <button class="nav-item" data-page="food"><span class="ico">🍲</span><span>好好吃饭</span></button>
+  </aside>
 
-<main>
+  <main class="main">
 
-<!-- ① 大盘概览 -->
-<section id="sec-overview">
-  <h2><span class="num">①</span> 大盘概览与资金主线</h2>
-  <div class="sec-desc">A 股三大指数盘中实时 + 美股隔夜收盘。左侧 16 个核心申万一级行业热力网格见第 ③ 节。</div>
-
-  <div class="banner">
-    <div class="bt">▎今日要点（TL;DR · 2026-07-29 11:13）</div>
-    <div class="bb">
-      A 股 <strong>上证 -0.23%、深证 +0.10%、创业板 +0.27% 企稳反弹</strong>（昨日创业板 -7.35% 暴跌后），但 <strong>科创50 -3.31% 继续补跌</strong>；行业层面 <strong>教育 +5.76%、休闲食品 +3.98%、非白酒 +3.64%、游戏 +3.44% 领涨</strong>，消费+防御主线延续；资金面 <strong>乘用车主力 +9.25万、元件 +8.53万、饮料乳品 +6.17万</strong>。隔夜美股道指 +1.03%、标普 +0.21% 反弹，纳指 -0.22% / 纳指100 -0.98% 仍弱。市场呈现"企稳反弹+结构分化"格局。
-    </div>
-  </div>
-
-  <div class="sec-desc">A 股核心指数（盘中实时）</div>
-  <div class="grid grid-4" style="margin-bottom:14px;">
-    <div class="card">
-      <div class="label">A 股指数</div>
-      <div class="name">上证指数 <span style="font-size:10px;color:var(--text-faint)">sh000001</span></div>
-      <div class="price">3,796.67</div>
-      <div class="chg down">-0.44% (-16.64)</div>
-      <div class="meta">成交 6719 亿 · 5日 -1.82% · YTD -4.34%</div>
-    </div><div class="card">
-      <div class="label">A 股指数</div>
-      <div class="name">深证成指 <span style="font-size:10px;color:var(--text-faint)">sz399001</span></div>
-      <div class="price">13,463.20</div>
-      <div class="chg down">-0.34% (-46.48)</div>
-      <div class="meta">成交 7719 亿 · 5日 -4.25% · YTD -0.46%</div>
-    </div><div class="card">
-      <div class="label">A 股指数</div>
-      <div class="name">创业板指 <span style="font-size:10px;color:var(--text-faint)">sz399006</span></div>
-      <div class="price">3,314.37</div>
-      <div class="chg down">-0.38% (-12.66)</div>
-      <div class="meta">成交 3604 亿 · 5日 -7.08% · YTD 3.47%</div>
-    </div><div class="card">
-      <div class="label">A 股指数</div>
-      <div class="name">科创50 <span style="font-size:10px;color:var(--text-faint)">sh000688</span></div>
-      <div class="price">1,625.59</div>
-      <div class="chg down">-4.01% (-67.89)</div>
-      <div class="meta">成交 942 亿 · 5日 -12.61% · YTD 20.93%</div>
-    </div><div class="card">
-      <div class="label">A 股指数</div>
-      <div class="name">沪深300 <span style="font-size:10px;color:var(--text-faint)">sh000300</span></div>
-      <div class="price">4,564.98</div>
-      <div class="chg down">-0.10% (-4.54)</div>
-      <div class="meta">成交 4727 亿 · 5日 -3.23% · YTD -1.40%</div>
-    </div><div class="card">
-      <div class="label">A 股指数</div>
-      <div class="name">中证500 <span style="font-size:10px;color:var(--text-faint)">sh000905</span></div>
-      <div class="price">7,389.09</div>
-      <div class="chg down">-0.73% (-54.34)</div>
-      <div class="meta">成交 2837 亿 · 5日 -4.68% · YTD -1.02%</div>
-    </div><div class="card">
-      <div class="label">A 股指数</div>
-      <div class="name">中证1000 <span style="font-size:10px;color:var(--text-faint)">sh000852</span></div>
-      <div class="price">6,941.23</div>
-      <div class="chg down">-1.21% (-85.05)</div>
-      <div class="meta">成交 2851 亿 · 5日 -3.04% · YTD -8.61%</div>
-    </div>
-  </div>
-
-  <div class="sec-desc">美股核心指数（2026-07-28 美东收盘 = 北京 7/29 凌晨）</div>
-  <div class="grid grid-4">
-    
-  </div>
-  <span class="sec-src">来源：同花顺 Financial-API（主）/ westock-data（备用）· 行情日期 2026-07-29 11:13</span>
-</section>
-
-<!-- ② 资金主线 -->
-<section id="sec-capital">
-  <h2><span class="num">②</span> 当日资金主线</h2>
-  <div class="sec-desc">成交额多周期对比 + 涨跌分布 + 行业资金流入 Top3。资金数据源：a-stock-data（资金面）。</div>
-
-  <div class="stat-strip">
-    <div class="stat"><div class="l">两市成交额(昨日)</div><div class="v">20,258 亿</div><div class="sub">vs 5日均 93.08% · 缩量</div></div>
-    <div class="stat"><div class="l">今日涨幅Top1</div><div class="v up">教育 +5.76%</div><div class="sub">全通教育涨停</div></div>
-    <div class="stat"><div class="l">今日主力净流入Top1</div><div class="v up">乘用车 +9.25万</div><div class="sub">8/8 全涨</div></div>
-    <div class="stat"><div class="l">昨日涨停/跌停</div><div class="v">57 / 0</div><div class="sub">情绪未崩</div></div>
-  </div>
-
-  <div style="margin-top:14px;padding:12px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;font-size:12px;color:#065f46;">
-    <strong>资金定性：</strong>今日市场企稳反弹，<strong>消费+防御主线延续</strong>（教育/休闲食品/非白酒/游戏领涨），资金流入乘用车/元件/饮料乳品；昨日（7/28）通信-10.88%/电子-7.02% 雪崩式调整，今日元件板块虽跌-3.21%但资金逆势流入，<strong>疑似抄底信号</strong>。
-  </div>
-  <span class="sec-src">来源：a-stock-data 资金面 + westock-data sector ranking · 行业资金流为统计推断口径</span>
-</section>
-
-<!-- ③ 行业热力网格 -->
-<section id="sec-heatmap">
-  <h2><span class="num">③</span> 一级行业涨跌热力网格</h2>
-  <div class="sec-desc">申万一级 31 个行业 × 多周期涨跌幅。核心 16 个见配置；热力网格展示全部 31 个更完整。涨红跌绿，深浅表强度。</div>
-
-  <div style="margin-bottom:14px;padding:12px 16px;background:#fffbeb;border:1px solid #fde68a;border-radius:6px;font-size:12px;color:#92400e;">
-    <strong>⚠️ 数据说明：</strong>westock-data 行业板块批量 quote 在盘中部分接口未返回完整数据；下方展示 sector ranking 的 <strong>行业涨幅 Top6 + 概念涨幅 Top6</strong>（盘中实时）+ 行业资金流入 Top3。完整 31 个行业热力网格待盘后（16:00 后）更新。
-  </div>
-
-  <div class="grid grid-2">
-    <div>
-      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">▎行业涨幅 Top6（盘中实时）</div>
-      <table>
-        <thead><tr><th class="l">#</th><th class="l">行业</th><th>涨幅%</th><th>5日%</th><th>20日%</th><th class="l">龙头股</th></tr></thead>
-        <tbody>
-          <tr><td class="l">1</td><td class="l">教育</td><td class="up">+4.70%</td><td>10.59</td><td>-0.62</td><td class="l">全通教育(20.05)</td></tr><tr><td class="l">2</td><td class="l">休闲食品</td><td class="up">+4.51%</td><td>8.04</td><td>3.93</td><td class="l">良品铺子(10.01)</td></tr><tr><td class="l">3</td><td class="l">游戏Ⅱ</td><td class="up">+4.01%</td><td>0.37</td><td>-4.77</td><td class="l">巨人网络(9.99)</td></tr><tr><td class="l">4</td><td class="l">非白酒</td><td class="up">+3.91%</td><td>3.49</td><td>9.14</td><td class="l">百润股份(9.99)</td></tr><tr><td class="l">5</td><td class="l">饮料乳品</td><td class="up">+3.73%</td><td>3.19</td><td>8.84</td><td class="l">欢乐家(20.00)</td></tr><tr><td class="l">6</td><td class="l">小家电</td><td class="up">+3.42%</td><td>6.60</td><td>5.80</td><td class="l">石头科技(5.96)</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div>
-      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">▎概念涨幅 Top6（盘中实时）</div>
-      <table>
-        <thead><tr><th class="l">#</th><th class="l">概念</th><th>涨幅%</th><th>5日%</th><th>20日%</th><th class="l">龙头股</th></tr></thead>
-        <tbody>
-          <tr><td class="l">1</td><td class="l">乳业</td><td class="up">+5.72%</td><td>8.79</td><td>6.88</td><td class="l">欢乐家(20.00)</td></tr><tr><td class="l">2</td><td class="l">休闲食品概念</td><td class="up">+4.45%</td><td>7.96</td><td>3.59</td><td class="l">良品铺子(10.01)</td></tr><tr><td class="l">3</td><td class="l">中概股回归</td><td class="up">+3.88%</td><td>2.11</td><td>-0.37</td><td class="l">巨人网络(9.99)</td></tr><tr><td class="l">4</td><td class="l">醋酸</td><td class="up">+3.80%</td><td>0.77</td><td>10.19</td><td class="l">江苏索普(4.97)</td></tr><tr><td class="l">5</td><td class="l">华为汽车股权合作</td><td class="up">+3.05%</td><td>3.81</td><td>-1.17</td><td class="l">赛力斯(4.15)</td></tr><tr><td class="l">6</td><td class="l">轮毂电机</td><td class="up">+2.79%</td><td>5.66</td><td>-1.18</td><td class="l">圣龙股份(9.99)</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <span class="sec-src">来源：westock-data sector ranking · 完整 31 行业热力网格待盘后（约 16:00）由 automation 自动更新</span>
-</section>
-
-<!-- ④ 主力资金排行 -->
-<section id="sec-fundflow">
-  <h2><span class="num">④</span> 主力资金行业净流入与排行</h2>
-  <div class="sec-desc">a-stock-data 资金面口径。盘中实时 Top3（westock-data sector ranking 拉取）。</div>
-
-  <div class="grid grid-3" style="margin-top:10px;">
-    <div class="card">
-      <div class="label">主力净流入 #1</div>
-      <div class="name">游戏Ⅱ</div>
-      <div class="price up">+10.71 亿</div>
-      <div class="chg up">板块涨幅 +4.01%</div>
-      <div class="meta">5日累计 -10.52 亿 · 买卖比 22/26</div>
-    </div><div class="card">
-      <div class="label">主力净流入 #2</div>
-      <div class="name">乘用车</div>
-      <div class="price up">+10.00 亿</div>
-      <div class="chg up">板块涨幅 +3.02%</div>
-      <div class="meta">5日累计 +11.22 亿 · 买卖比 8/8</div>
-    </div><div class="card">
-      <div class="label">主力净流入 #3</div>
-      <div class="name">白酒Ⅱ</div>
-      <div class="price up">+9.02 亿</div>
-      <div class="chg up">板块涨幅 +1.76%</div>
-      <div class="meta">5日累计 +14.55 亿 · 买卖比 19/19</div>
-    </div>
-  </div>
-  <span class="sec-src">来源：a-stock-data 资金面 · westock-data sector ranking 交叉验证</span>
-</section>
-
-<!-- ⑤ 风格轮动 -->
-<section id="sec-rotation">
-  <h2><span class="num">⑤</span> 风格轮动强弱</h2>
-  <div class="sec-desc">沪深300/中证1000/全指成长/全指价值 多周期涨跌幅对比。今日市场画像：</div>
-
-  <div class="grid grid-4">
-    <div class="card"><div class="label">大盘 vs 小盘</div><div class="name">沪深300 vs 中证1000</div><div class="price">-0.11% / -0.20%</div><div class="chg neutral">接近持平</div></div>
-    <div class="card"><div class="label">今日创业板</div><div class="name">创业板指</div><div class="price up">+0.27%</div><div class="chg up">企稳反弹</div></div>
-    <div class="card"><div class="label">今日科创50</div><div class="name">科创50</div><div class="price down">-3.31%</div><div class="chg down">继续补跌</div></div>
-    <div class="card"><div class="label">昨日风格（盘后）</div><div class="name">全指价值 vs 全指成长</div><div class="price up">+3.95% / -7.75%</div><div class="chg up">价值强于成长 11.70pp</div></div>
-  </div>
-
-  <div style="margin-top:14px;padding:12px 16px;background:#fef3c7;border:1px solid #fde68a;border-radius:6px;font-size:12px;color:#92400e;">
-    <strong>⚠️ 风格切换信号：</strong>昨日（7/28）"价值主导（价值>成长 +11.70pp）"格局确立；今日盘中创业板 +0.27% 企稳、科创50 -3.31% 补跌，<strong>风格可能从极端价值向"分化修复"切换</strong>——今日盘后（约 16:00）automation 将自动拉取最新风格数据确认。
-  </div>
-  <span class="sec-src">来源：westock-data market-overview --type rotation · 数据日期 2026-07-28 盘后（今日盘后更新）</span>
-</section>
-
-<!-- ⑥ 北向资金 -->
-<section id="sec-northbound">
-  <h2><span class="num">⑥</span> 北向资金动向与趋势</h2>
-  <div class="sec-desc">注：今日盘中 westock-data 北向全市场净流入接口尚未更新；以下为 7/28 盘后龙虎榜口径数据。⚠️ 龙虎榜≠全市场净流入。</div>
-
-  <div class="stat-strip">
-    <div class="stat"><div class="l">昨日北向总成交</div><div class="v">2,810.78 亿</div><div class="sub">占两市 13.88%</div></div>
-    <div class="stat"><div class="l">龙虎榜口径净买</div><div class="v up">+7.44 亿</div><div class="sub">参与 26 只个股</div></div>
-    <div class="stat"><div class="l">沪股通龙虎榜</div><div class="v up">+0.77 亿</div><div class="sub">深股通 +6.68 亿</div></div>
-    <div class="stat"><div class="l">北向 ETF 成交</div><div class="v">56.81 亿</div><div class="sub">沪 33.95 / 深 22.86</div></div>
-  </div>
-
-  <div style="margin-top:14px;padding:12px 16px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;font-size:12px;color:#9a3412;">
-    <strong>⚠️ 口径说明：</strong>以上为龙虎榜口径（仅登榜个股），<strong>不等于</strong>北向全市场净流入。机构席位当日龙虎榜合计净卖出 3.41 亿，与北向龙虎榜口径净买 7.44 亿方向相反——外资相对积极、机构相对谨慎。
-  </div>
-  <span class="sec-src">来源：21世纪经济报道/证券时报/巨灵数据 @ 2026-07-28 · 龙虎榜口径</span>
-</section>
-
-<!-- ⑦ 行业配置研判 -->
-<section id="sec-judgment">
-  <h2><span class="num">⑦</span> 三条行业配置研判</h2>
-  <div class="sec-desc">基于行情+资金流+风格切换+公开媒体观点综合判断。⚠️ 非投资建议，仅供参考。</div>
-
-  <div class="track-card" style="border-left-color:var(--accent);">
-    <div class="tc-head"><span class="tc-name">▎研判 1 · 消费+防御主线延续</span><span class="tc-tag confirmed">✓ 短期延续</span></div>
-    <div class="track-grid">
-      <div class="track-block"><div class="tb-title">核心论据</div>
-        <ul><li>教育+5.76%/休闲食品+3.98%/非白酒+3.64% 领涨</li><li>乘用车主力+9.25万/饮料乳品+6.17万</li><li>《扩大消费"十五五"规划》落地</li></ul></div>
-      <div class="track-block"><div class="tb-title">驱动因素</div>
-        <ul><li>7月底政治局会议预期，扩内需居首</li><li>美联储议息前避险</li><li>消费板块估值分位低</li></ul></div>
-      <div class="track-block"><div class="tb-title">风险提示</div>
-        <ul><li>若美联储偏鸽+科技股止跌，资金可能回流成长</li><li>消费复苏斜率待验证</li></ul></div>
-    </div>
-  </div>
-
-  <div class="track-card" style="border-left-color:var(--warn);">
-    <div class="tc-head"><span class="tc-name">▎研判 2 · 科技板块分化修复</span><span class="tc-tag unconfirmed">⚠ 等右侧</span></div>
-    <div class="track-grid">
-      <div class="track-block"><div class="tb-title">核心论据</div>
-        <ul><li>昨日通信-10.88%/电子-7.02% 雪崩</li><li>今日元件资金逆势+8.53万（抄底信号）</li><li>YTD 通信+20.92%/电子+27.12% 仍是风口</li></ul></div>
-      <div class="track-block"><div class="tb-title">驱动因素</div>
-        <ul><li>英伟达"循环融资"疑虑</li><li>韩 KOSPI 熔断、美联储议息</li><li>科技股交易拥挤度高位</li></ul></div>
-      <div class="track-block"><div class="tb-title">风险提示</div>
-        <ul><li>英伟达财报/美联储议息前不抄跌停</li><li>等创业板站上 20 日均线 + 量能衰竭</li></ul></div>
-    </div>
-  </div>
-
-  <div class="track-card" style="border-left-color:#7c3aed;">
-    <div class="tc-head"><span class="tc-name">▎研判 3 · 政策驱动题材轮动</span><span class="tc-tag unconfirmed">⚠ 题材型</span></div>
-    <div class="track-grid">
-      <div class="track-block"><div class="tb-title">核心论据</div>
-        <ul><li>脑机接口/DRG-DIP/教育 政策催化</li><li>教育板块今日 +5.76% 领涨</li><li>国新办"十五五"+医保局方案</li></ul></div>
-      <div class="track-block"><div class="tb-title">驱动因素</div>
-        <ul><li>7月底政治局会议</li><li>"十五五"系列主题发布会</li><li>扩内需+科技自立双轮驱动</li></ul></div>
-      <div class="track-block"><div class="tb-title">风险提示</div>
-        <ul><li>题材波动大，封板失败即-10%</li><li>轻仓试探+严格止盈止损</li></ul></div>
-    </div>
-  </div>
-  <span class="sec-src">综合判断基于 westock-data sector ranking + WebSearch 公开媒体 + 机构公开观点 @ 2026-07-29</span>
-</section>
-
-<!-- ⑧ 低位赛道（非科技） -->
-<section id="sec-lowtrack">
-  <h2><span class="num">⑧</span> 每日动态低位赛道（非科技股）</h2>
-  <div class="sec-desc">每日动态筛选：近24小时估值处于历史低位 + 政策落地 + 资金流入 + 基本面企稳反转。每条赛道写明三点：估值分位/底部企稳/重磅新闻。</div>
-
-  <div style="margin-bottom:14px;padding:12px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;font-size:12px;color:#065f46;">
-    <strong>筛选标准（每条赛道需同时满足≥3项）：</strong>
-    ① 估值历史分位 &lt; 30%（近5年）② 主力5日净流入Top50或连续流入≥5日 ③ 技术反转信号（RSI超卖/早晨之星/均线多头）④ 政策落地催化（近7日）⑤ 基本面企稳反转
-  </div>
-
-  <div class="track-card" style="border-left-color:var(--up);">
-    <div class="tc-head"><span class="tc-name">▎赛道 1 · 银行/高股息红利</span><span class="tc-tag confirmed">✓ 底部已确认</span></div>
-    <div class="track-grid">
-      <div class="track-block"><div class="tb-title">① 估值分位</div>
-        <ul><li>行业 PE 6.19× / PB 0.52×</li><li>历史5%分位以下</li><li>5日涨幅+0.79%/YTD -3.3%</li></ul></div>
-      <div class="track-block"><div class="tb-title">② 底部企稳</div>
-        <ul><li>银行板块今日 <strong>+0.28%</strong> 抗跌</li><li>国有大行5日主力+5.42亿</li><li>20日+10.23% 持续走强</li></ul></div>
-      <div class="track-block"><div class="tb-title">③ 重磅新闻</div>
-        <ul><li>7月底政治局会议扩内需</li><li>央行降息预期</li><li>高股息红利受避险追捧</li></ul></div>
-    </div>
-  </div>
-
-  <div class="track-card" style="border-left-color:var(--up);">
-    <div class="tc-head"><span class="tc-name">▎赛道 2 · 食品饮料/白酒+休闲食品</span><span class="tc-tag confirmed">✓ 底部已确认</span></div>
-    <div class="track-grid">
-      <div class="track-block"><div class="tb-title">① 估值分位</div>
-        <ul><li>行业 PE 19.67×</li><li>近5年30%分位以下</li><li>休闲食品今日+3.96%</li></ul></div>
-      <div class="track-block"><div class="tb-title">② 底部企稳</div>
-        <ul><li>休闲食品5日+7.49%/20日+3.40%</li><li>多股涨停（良品铺子+10.01%）</li><li>板块成交活跃</li></ul></div>
-      <div class="track-block"><div class="tb-title">③ 重磅新闻</div>
-        <ul><li>《扩大消费"十五五"规划》</li><li>7月总理座谈会扩内需</li><li>乳业概念 +5.88% 同步走强</li></ul></div>
-    </div>
-  </div>
-
-  <div class="track-card" style="border-left-color:var(--warn);">
-    <div class="tc-head"><span class="tc-name">▎赛道 3 · 脑机接口/医疗器械</span><span class="tc-tag unconfirmed">⚠ 题材型</span></div>
-    <div class="track-grid">
-      <div class="track-block"><div class="tb-title">① 估值分位</div>
-        <ul><li>医疗器械PE 32.4×</li><li>近5年40%分位</li><li>板块分化大</li></ul></div>
-      <div class="track-block"><div class="tb-title">② 底部企稳</div>
-        <ul><li>⚠ 题材型，技术性强势</li><li>未确认基本面底部</li><li>建议轻仓试探</li></ul></div>
-      <div class="track-block"><div class="tb-title">③ 重磅新闻</div>
-        <ul><li>国新办"十五五"脑机接口</li><li>11部门中医药方案</li><li>医保DRG/DIP 3.0版</li></ul></div>
-    </div>
-  </div>
-
-  <div class="track-card" style="border-left-color:var(--up);">
-    <div class="tc-head"><span class="tc-name">▎赛道 4 · 电力/高股息防御</span><span class="tc-tag confirmed">✓ 底部已确认</span></div>
-    <div class="track-grid">
-      <div class="track-block"><div class="tb-title">① 估值分位</div>
-        <ul><li>公用事业PE 21.17×</li><li>龙头股息率4%+</li><li>YTD +2.64% 防御性胜出</li></ul></div>
-      <div class="track-block"><div class="tb-title">② 底部企稳</div>
-        <ul><li>公用事业今日 -0.03% 几乎平盘</li><li>长江电力北向成交13.96亿</li><li>避险资金持续涌入</li></ul></div>
-      <div class="track-block"><div class="tb-title">③ 重磅新闻</div>
-        <ul><li>电力市场化改革推进</li><li>夏季用电负荷创新高</li><li>新能源消纳压力下水电压舱价值</li></ul></div>
-    </div>
-  </div>
-  <span class="sec-src">综合来源：westock-data quote/sector ranking + WebSearch 政策新闻 @ 2026-07-29</span>
-</section>
-
-<!-- ⑨ 科技股推荐 -->
-<section id="sec-techstock">
-  <h2><span class="num">⑨</span> 科技股推荐（独立板块）</h2>
-  <div class="sec-desc">基于 4 原则：资金持续流入 + 形态走好 + 业绩有增长性 + 板块属于风口。独立于低位赛道板块。</div>
-
-  <div style="margin-bottom:14px;padding:12px 16px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:6px;font-size:12px;color:#5b21b6;">
-    <strong>4 原则匹配：</strong>① 资金持续流入（cap_main_5d 正）② 形态走好（抗跌/上涨）③ 业绩增长（财务数据验证）④ 风口板块（半导体/AI硬件/新能源核心环节）
-  </div>
-
-  <div class="pick-card">
-    <div class="pick-rank tech">
-      <div class="pr-num">1</div>
-      <div class="pr-lab">TECH</div>
-    </div>
-    <div class="pick-body">
-      <div class="pb-head">
-        <span class="pb-name">太极实业</span>
-        <span class="pb-code">sh600667</span>
-        <span class="pb-tag" style="background:#7c3aed1a;color:#7c3aed;">半导体封测</span>
-        <span class="pb-chg up">昨日+2.51%</span>
+    <!-- 首页 -->
+    <section class="page active" id="page-home">
+      <div class="home-wrap">
+        <div class="home-date" id="homeDate">--</div>
+        <div class="home-quote-mark">"</div>
+        <div class="home-quote-text" id="quoteText">加载中…</div>
+        <button class="home-change" onclick="nextQuote()">换一条</button>
       </div>
-      <div class="reasons">
-        <div class="r-row"><div class="r-k">资金面</div><div class="r-v">5日主力净流入 <strong>+6.90万</strong>（科技股前列），昨日逆势 +2.51%</div></div>
-        <div class="r-row"><div class="r-k">业绩增长</div><div class="r-v">2026Q1 营收 <strong>+117%</strong>/净利 <strong>+101%</strong> 翻倍</div></div>
-        <div class="r-row"><div class="r-k">风口板块</div><div class="r-v">半导体封测龙头，AI 硬件产业链核心；子公司海太半导体与 SK 海力士合作</div></div>
-        <div class="r-row"><div class="r-k">风险提示</div><div class="r-v">PE 83.7× 估值偏高；半导体封测受存储周期影响</div></div>
+    </section>
+
+    <!-- 英语学了吗 -->
+    <section class="page" id="page-english">
+      <div class="page-head">
+        <div class="page-title">英语学了吗</div>
+        <div class="page-desc">每日美式英语精听 · 真实新闻原速音频 · 倍速可控 · 点词查义</div>
       </div>
-      <span class="src">westock-data finance + ranking cap_main_5d @ 2026-07-28</span>
-    </div>
-  </div>
 
-  <div class="pick-card">
-    <div class="pick-rank tech">
-      <div class="pr-num">2</div>
-      <div class="pr-lab">TECH</div>
-    </div>
-    <div class="pick-body">
-      <div class="pb-head">
-        <span class="pb-name">雅克科技</span>
-        <span class="pb-code">sz002409</span>
-        <span class="pb-tag" style="background:#7c3aed1a;color:#7c3aed;">半导体材料</span>
-        <span class="pb-chg down">昨日-1.72%</span>
+      <div class="eng-tabs">
+        <button class="eng-tab active" data-eng="news">📰 新闻精听（真实音频）</button>
+        <button class="eng-tab" data-eng="show">🎬 美剧精听（剧本模式）</button>
       </div>
-      <div class="reasons">
-        <div class="r-row"><div class="r-k">资金面</div><div class="r-v">5日主力净流入 <strong>+13.81万</strong>（科技股Top1），昨日仅 -1.72% 显著抗跌</div></div>
-        <div class="r-row"><div class="r-k">业绩增长</div><div class="r-v">2026Q1 净利 2.67亿 / TTM 10.07亿 稳健</div></div>
-        <div class="r-row"><div class="r-k">风口板块</div><div class="r-v">半导体材料龙头（光刻胶/前驱体）；AI 硬件 + 国产替代双轮驱动</div></div>
-        <div class="r-row"><div class="r-k">风险提示</div><div class="r-v">PE 78.7× 估值偏高；光刻胶国产化进度不及预期</div></div>
+
+      <!-- 新闻精听 -->
+      <div class="eng-pane active" id="eng-news">
+        <div class="card">
+          <div class="card-title"><span class="dot"></span>真实美式新闻音频 <span class="tag-ml" id="audioSource">NPR News Now · 自动抓取最新一期</span></div>
+          <div class="audio-player">
+            <div class="ep-info">
+              <div class="ep-title" id="epTitle">正在加载最新一期新闻…</div>
+              <div class="ep-meta" id="epMeta">美式英语 · 原速新闻 · 拖动进度条 / 切换倍速</div>
+            </div>
+            <audio id="audioPlayer" preload="metadata"></audio>
+            <div class="seek-row">
+              <span id="curTime">0:00</span>
+              <input type="range" id="seekBar" min="0" max="1000" value="0">
+              <span id="durTime">0:00</span>
+            </div>
+            <div class="control-row">
+              <button class="ac-btn" onclick="seekAudio(-10)" title="后退10秒">⏪</button>
+              <button class="ac-btn ac-main" id="playBtn" onclick="togglePlay()">▶</button>
+              <button class="ac-btn" onclick="seekAudio(10)" title="前进10秒">⏩</button>
+            </div>
+            <div class="speed-row">
+              <span class="spd-label">倍速</span>
+              <button class="spd" data-s="0.5">0.5×</button>
+              <button class="spd" data-s="0.75">0.75×</button>
+              <button class="spd active" data-s="1">1.0×</button>
+              <button class="spd" data-s="1.25">1.25×</button>
+              <button class="spd" data-s="1.5">1.5×</button>
+              <button class="spd" data-s="2">2.0×</button>
+            </div>
+            <div class="audio-fallback" id="audioFallback" style="display:none;">
+              <div style="font-size:13px;color:var(--ink-soft);margin-bottom:8px;">自动抓取失败？粘贴任意 mp3/m4a 音频直链播放：</div>
+              <div style="display:flex;gap:8px;">
+                <input type="text" id="audioInput" placeholder="https://....mp3" style="flex:1;padding:9px 12px;border:1.5px solid var(--purple);border-radius:8px;font-family:inherit;font-size:13px;">
+                <button class="btn btn-primary btn-sm" onclick="loadManualAudio()">加载</button>
+              </div>
+            </div>
+            <div class="audio-status" id="audioStatus"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="dot"></span>精读素材 · 双语新闻 <span class="tag-ml">点击单词实时查义</span></div>
+          <div id="newsTranscript"></div>
+          <div class="tip-box" style="margin-top:14px;margin-bottom:0;">
+            <div class="tip-label">精听流程</div>
+            <p><b>盲听3遍</b>（用上面播放器，先1.0×听不懂再0.75×）→ <b>对照下面双语精读</b>逐句理解、点词查义 → <b>再听1遍</b>（可开1.25×挑战）。</p>
+          </div>
+        </div>
       </div>
-      <span class="src">westock-data finance + ranking cap_main_5d @ 2026-07-28</span>
-    </div>
-  </div>
 
-  <div class="pick-card">
-    <div class="pick-rank tech">
-      <div class="pr-num">3</div>
-      <div class="pr-lab">TECH</div>
-    </div>
-    <div class="pick-body">
-      <div class="pb-head">
-        <span class="pb-name">宁德时代</span>
-        <span class="pb-code">sz300750</span>
-        <span class="pb-tag" style="background:#7c3aed1a;color:#7c3aed;">动力电池</span>
-        <span class="pb-chg down">昨日-2.29%</span>
+      <!-- 美剧精听 -->
+      <div class="eng-pane" id="eng-show">
+        <div class="show-banner" style="display:flex;align-items:center;gap:20px;padding:22px;background:#fff;border:1.5px solid var(--purple);border-radius:16px;margin-bottom:22px;">
+          <div id="showPoster" style="width:72px;height:96px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;background:var(--purple);">🎬</div>
+          <div><h3 id="showName" style="font-size:18px;font-weight:800;color:var(--ink);margin-bottom:4px;">老友记 Friends</h3><div class="show-meta" id="showMeta" style="font-size:13px;color:var(--ink-soft);margin-bottom:8px;">S03E02 · 日常交流</div><span id="showLevel" style="display:inline-block;font-size:12px;padding:3px 10px;border-radius:12px;background:var(--purple);color:#fff;font-weight:700;">初中级</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot"></span>逐句精听 <span class="tag-ml" id="listenProgress">1 / 6</span></div>
+          <div id="sentenceList"></div>
+          <div class="player-controls">
+            <button class="pc-btn" id="prevBtn" onclick="prevSentence()">‹</button>
+            <button class="pc-btn pc-main" id="showPlayBtn" onclick="toggleShowSpeak(this)">▶</button>
+            <button class="pc-btn" id="nextBtn" onclick="nextSentence()">›</button>
+            <div class="progress-line"><div class="progress-fill" id="listenBar" style="width:16.6%"></div></div>
+          </div>
+          <div class="speed-row" style="margin-top:16px;">
+            <span class="spd-label">朗读倍速</span>
+            <button class="spd spd-show" data-s="0.6">0.6×</button>
+            <button class="spd spd-show" data-s="0.8">0.8×</button>
+            <button class="spd spd-show active" data-s="1">1.0×</button>
+            <button class="spd spd-show" data-s="1.2">1.2×</button>
+            <button class="spd spd-show" data-s="1.5">1.5×</button>
+          </div>
+          <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--ink-soft);">🔊 美式英语语音合成朗读当前句 · 配合「上句/下句」逐句跟读</div>
+        </div>
       </div>
-      <div class="reasons">
-        <div class="r-row"><div class="r-k">资金面</div><div class="r-v">5日主力净流入 <strong>+9.10万</strong>；北向成交 55.66亿（深股通Top2）</div></div>
-        <div class="r-row"><div class="r-k">业绩增长</div><div class="r-v">2026H1 营收 2769亿 / 净利 <strong>432.84亿</strong> 同比大增</div></div>
-        <div class="r-row"><div class="r-k">风口板块</div><div class="r-v">全球动力电池龙头（市占率35%+）；新能源+储能双轮驱动</div></div>
-        <div class="r-row"><div class="r-k">估值面</div><div class="r-v">PE <strong>21.3×</strong>（科技股估值最低，安全边际高）</div></div>
-        <div class="r-row"><div class="r-k">风险提示</div><div class="r-v">新能源车销量增速放缓；锂价波动影响毛利</div></div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>笔记备忘录 <span class="tag-ml" id="noteCount">0 个生词</span></div>
+        <div class="notes-list" id="notesList"><div class="empty-note">还没有收藏的生词，点击任意句子中的单词即可实时查义并收藏</div></div>
       </div>
-      <span class="src">westock-data finance + ranking cap_main_5d + 巨灵北向成交 @ 2026-07-28</span>
-    </div>
-  </div>
-  <span class="sec-src">数据来源：westock-tool + westock-data + 巨灵数据 · 4 原则：资金持续流入+形态走好+业绩增长+风口板块</span>
-</section>
+    </section>
 
-<!-- ⑩ 三只股票推荐 -->
-<section id="sec-stockpick">
-  <h2><span class="num">⑩</span> 三只股票推荐（基于当日资金主线）</h2>
-  <div class="sec-desc">基于当日资金主线流动情况（非科技股主线）：高股息红利+消费扩内需+高股息防御。</div>
-
-  <div class="pick-card">
-    <div class="pick-rank">
-      <div class="pr-num">1</div>
-      <div class="pr-lab">RANK</div>
-    </div>
-    <div class="pick-body">
-      <div class="pb-head">
-        <span class="pb-name">农业银行</span>
-        <span class="pb-code">sh601288</span>
-        <span class="pb-tag" style="background:var(--up-soft);color:var(--up);">高股息红利</span>
-        <span class="pb-chg up">昨日+3.57%</span>
+    <!-- 投资学了吗 -->
+    <section class="page" id="page-invest">
+      <div class="page-head">
+        <div class="page-title">投资学了吗</div>
+        <div class="page-desc">股票小白三个月学习计划 · 实时行情 · 只学不买 → 模拟实践 → 体系构建</div>
       </div>
-      <div class="reasons">
-        <div class="r-row"><div class="r-k">资金面</div><div class="r-v">国有大行板块5日累计主力+5.42亿（31行业之首）；今日+3.57%创2个月新高</div></div>
-        <div class="r-row"><div class="r-k">估值面</div><div class="r-v">PE 4.80× / PB 0.45× / 股息率 5.60%，历史5%分位以下</div></div>
-        <div class="r-row"><div class="r-k">基本面</div><div class="r-v">国有大行净息差企稳，资产质量稳健</div></div>
-        <div class="r-row"><div class="r-k">政策催化</div><div class="r-v">7月底政治局会议预期，扩内需居首；央行降息预期</div></div>
-        <div class="r-row"><div class="r-k">风险提示</div><div class="r-v">若降息落地，净息差可能进一步收窄</div></div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>实时A股行情 · 上证指数 <span class="tag-ml">数据来源 TradingView</span></div>
+        <div class="tv-box">
+          <div class="tradingview-widget-container" style="height:240px;">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"SSE:000001","width":"100%","height":"240","locale":"zh_CN","dateRange":"3M","colorTheme":"light","isTransparent":true,"autosize":false,"largeChartUrl":"","chartOnly":false,"noTimeScale":false}</script>
+          </div>
+        </div>
       </div>
-      <span class="src">westock-data quote + westock-tool ranking cap_main_5d,fin_valuation @ 2026-07-28</span>
-    </div>
-  </div>
 
-  <div class="pick-card">
-    <div class="pick-rank">
-      <div class="pr-num">2</div>
-      <div class="pr-lab">RANK</div>
-    </div>
-    <div class="pick-body">
-      <div class="pb-head">
-        <span class="pb-name">贵州茅台</span>
-        <span class="pb-code">sh600519</span>
-        <span class="pb-tag" style="background:var(--up-soft);color:var(--up);">消费扩内需</span>
-        <span class="pb-chg up">昨日+2.37%</span>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>今日投资课 · 具体内容推送 <span class="tag-ml" id="todayLessonTag">--</span></div>
+        <div id="todayLesson" class="lesson">加载中…</div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="speakInvest(this)">🔊 朗读本课</button>
+          <button class="btn btn-primary btn-sm" onclick="prevLesson()">‹ 上一课</button>
+          <button class="btn btn-primary btn-sm" onclick="nextLesson()">下一课 ›</button>
+        </div>
       </div>
-      <div class="reasons">
-        <div class="r-row"><div class="r-k">资金面</div><div class="r-v">白酒板块5日累计主力+6.38亿；北向资金今日成交22.83亿（沪股通前三）</div></div>
-        <div class="r-row"><div class="r-k">估值面</div><div class="r-v">白酒行业PE 19.67×近5年30%分位以下</div></div>
-        <div class="r-row"><div class="r-k">基本面</div><div class="r-v">白酒库存周期见底，2026Q1业绩预增</div></div>
-        <div class="r-row"><div class="r-k">政策催化</div><div class="r-v">《扩大消费"十五五"规划》、总理座谈会扩内需</div></div>
-        <div class="r-row"><div class="r-k">风险提示</div><div class="r-v">消费复苏斜率不及预期</div></div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>学习进度</div>
+        <div class="progress-overview">
+          <div class="ring">
+            <svg width="120" height="120"><circle cx="60" cy="60" r="52" fill="none" stroke="#E5E7EB" stroke-width="10"/><circle id="ringFill" cx="60" cy="60" r="52" fill="none" stroke="#6D28D9" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
+            <div class="ring-text"><div class="ring-num" id="ringPct">0%</div><div class="ring-label">总进度</div></div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:15px;font-weight:800;color:var(--ink);margin-bottom:8px;" id="currentWeek">当前：第1周 · 建立认知框架</div>
+            <div style="font-size:13.5px;color:var(--ink-soft);line-height:1.7;" id="currentTip">本周目标：搞懂股票是什么、股市如何运作。第一个月<b style="color:var(--purple-deep);">只学不买</b>。</div>
+            <div style="margin-top:14px;">
+              <button class="btn btn-primary btn-sm" onclick="advanceWeek()">标记本周完成 →</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <span class="src">westock-data quote + 巨灵北向成交 @ 2026-07-28</span>
-    </div>
-  </div>
 
-  <div class="pick-card">
-    <div class="pick-rank">
-      <div class="pr-num">3</div>
-      <div class="pr-lab">RANK</div>
-    </div>
-    <div class="pick-body">
-      <div class="pb-head">
-        <span class="pb-name">长江电力</span>
-        <span class="pb-code">sh600900</span>
-        <span class="pb-tag" style="background:var(--up-soft);color:var(--up);">高股息防御</span>
-        <span class="pb-chg up">昨日+2.54%</span>
+      <div class="phase-tabs" id="phaseTabs">
+        <div class="phase-tab active" data-phase="1">第1个月 · 建立认知框架</div>
+        <div class="phase-tab" data-phase="2">第2个月 · 模拟与实践</div>
+        <div class="phase-tab" data-phase="3">第3个月 · 体系构建</div>
       </div>
-      <div class="reasons">
-        <div class="r-row"><div class="r-k">资金面</div><div class="r-v">5日主力净流入+8.55亿；北向成交13.96亿（沪股通前十）</div></div>
-        <div class="r-row"><div class="r-k">估值面</div><div class="r-v">股息率4%+，估值合理偏低</div></div>
-        <div class="r-row"><div class="r-k">基本面</div><div class="r-v">全球最大水电上市公司，现金流稳定，分红率70%+</div></div>
-        <div class="r-row"><div class="r-k">政策催化</div><div class="r-v">电力市场化改革推进，容量电价机制完善；夏季用电高峰</div></div>
-        <div class="r-row"><div class="r-k">风险提示</div><div class="r-v">来水不及预期；电价市场化短期冲击盈利</div></div>
+
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>学习路线 <span class="tag-ml" id="phaseLabel">第1个月 · 建立认知框架（只学不买）</span></div>
+        <div class="timeline" id="timeline"></div>
       </div>
-      <span class="src">westock-data quote + westock-tool ranking cap_main_5d @ 2026-07-28</span>
-    </div>
-  </div>
-  <span class="sec-src">数据来源：westock-tool + westock-data · 3 只均符合"大盘蓝筹+估值低位+资金持续流入+政策催化"四重共振</span>
-</section>
 
-<!-- ⭐ 今日重磅资讯 -->
-<section id="sec-news">
-  <h2><span class="num">⭐</span> 今日重磅资讯</h2>
-  <div class="sec-desc">政策落地 + 央行动作 + 龙头公告，按时间倒序。来源：同花顺资讯/财经媒体公开报道。</div>
-
-  <div class="news-item">
-    <div class="ni-time">2026-07-29 09:45</div>
-    <div class="ni-title">美联储议息会议（周四凌晨）前避险情绪升温</div>
-    <div class="ni-src">来源：21世纪经济报道 · 影响：市场风险偏好</div>
-  </div>
-
-  <div class="news-item">
-    <div class="ni-time">2026-07-29 08:30</div>
-    <div class="ni-title">国新办"十五五"系列主题发布会：脑机接口智能康复设备</div>
-    <div class="ni-src">来源：国新办 · 影响：医疗器械/脑机接口板块</div>
-  </div>
-
-  <div class="news-item">
-    <div class="ni-time">2026-07-29 07:00</div>
-    <div class="ni-title">《扩大消费"十五五"规划》正式发布</div>
-    <div class="ni-src">来源：国务院 · 影响：消费板块（食品饮料/商贸零售）</div>
-  </div>
-
-  <div class="news-item">
-    <div class="ni-time">2026-07-28 22:00</div>
-    <div class="ni-title">英伟达 7500 亿美元 AI 基建"循环融资"协议公布</div>
-    <div class="ni-src">来源：彭博社/路透社 · 影响：AI 硬件/通信设备/半导体</div>
-  </div>
-
-  <div class="news-item">
-    <div class="ni-time">2026-07-28 18:00</div>
-    <div class="ni-title">医保局按病种付费 3.0 版分组方案拟 7 月发布</div>
-    <div class="ni-src">来源：国家医保局 · 影响：医疗器械/DRG-DIP</div>
-  </div>
-
-  <div class="news-item">
-    <div class="ni-time">2026-07-28 16:00</div>
-    <div class="ni-title">韩 KOSPI 跌 10.84% 触发年内第八次熔断</div>
-    <div class="ni-src">来源：彭博社 · 影响：亚太科技股共振</div>
-  </div>
-  <span class="sec-src">来源：同花顺 Financial-API 资讯接口 + WebSearch 公开媒体 @ 2026-07-29</span>
-</section>
-
-<!-- ⭐ 成交量异动 -->
-<section id="sec-anomaly">
-  <h2><span class="num">⭐</span> 成交量异动</h2>
-  <div class="sec-desc">典型放量形态：放量大涨/放量下跌/放量滞涨/缩量止跌。基于 a-stock-data 量价数据。</div>
-
-  <div class="anomaly-item">
-    <span class="ai-tag tag-up">放量大涨</span>
-    <div><div class="ai-name">盐津铺子</div><div class="ai-code">sz002847</div></div>
-    <span class="ai-chg up">+10.01%</span>
-  </div>
-  <div class="anomaly-item">
-    <span class="ai-tag tag-up">放量大涨</span>
-    <div><div class="ai-name">金种子酒</div><div class="ai-code">sh600199</div></div>
-    <span class="ai-chg up">+10.01%</span>
-  </div>
-  <div class="anomaly-item">
-    <span class="ai-tag tag-up">放量大涨</span>
-    <div><div class="ai-name">全通教育</div><div class="ai-code">sz300359</div></div>
-    <span class="ai-chg up">+20.05%</span>
-  </div>
-  <div class="anomaly-item">
-    <span class="ai-tag tag-down">放量下跌</span>
-    <div><div class="ai-name">中际旭创</div><div class="ai-code">sz300308</div></div>
-    <span class="ai-chg down">-15.69%</span>
-  </div>
-  <div class="anomaly-item">
-    <span class="ai-tag tag-down">放量下跌</span>
-    <div><div class="ai-name">新易盛</div><div class="ai-code">sz300502</div></div>
-    <span class="ai-chg down">-17.13%</span>
-  </div>
-  <div class="anomaly-item">
-    <span class="ai-tag tag-vol">缩量止跌</span>
-    <div><div class="ai-name">农业银行</div><div class="ai-code">sh601288</div></div>
-    <span class="ai-chg up">+3.57%</span>
-  </div>
-  <div class="anomaly-item">
-    <span class="ai-tag tag-vol">缩量止跌</span>
-    <div><div class="ai-name">工商银行</div><div class="ai-code">sh601398</div></div>
-    <span class="ai-chg up">+3.10%</span>
-  </div>
-  <span class="sec-src">来源：a-stock-data 量价数据 · 异常判定阈值：放量 = 量比 > 2×，缩量 = 量比 < 0.7×</span>
-</section>
-
-<!-- ⭐ 个股异动提醒 -->
-<section id="sec-individual">
-  <h2><span class="num">⭐</span> 个股异动提醒</h2>
-  <div class="sec-desc">龙虎榜登榜 / 涨停 / 跌停 / 连续异动。基于 westock-data 龙虎榜+涨跌停接口。</div>
-
-  <div class="archive-item">
-    <span class="ar-time">2026-07-28 涨停</span>
-    <span class="ar-content">昨日涨停 <strong>57 只</strong>（情绪未崩）；跌停 <strong>0 只</strong>（流动性未失效）。典型涨停：盐津铺子+10.01%、金种子酒+10.01%、全通教育+20.05%。</span>
-  </div>
-  <div class="archive-item">
-    <span class="ar-time">2026-07-28 龙虎榜</span>
-    <span class="ar-content">龙虎榜净买入 <strong>中际旭创 28.39亿</strong>（7/28 跌15.69%）；机构席位净卖出 3.41亿（机构相对谨慎）。</span>
-  </div>
-  <div class="archive-item">
-    <span class="ar-time">2026-07-28 北向</span>
-    <span class="ar-content">北向龙虎榜净买入 <strong>+7.44亿</strong>；沪股通+0.77亿、深股通+6.68亿。中际旭创北向净买入 10.28亿（逆势抄底 AI 硬件龙头）。</span>
-  </div>
-  <div class="archive-item">
-    <span class="ar-time">2026-07-28 跌停</span>
-    <span class="ar-content">跌停 <strong>0 只</strong>，但科创板"易中天"（中际旭创/新易盛/天孚通信）均跌 13%+，近 20 日跌幅 -16%~-31%。</span>
-  </div>
-  <span class="sec-src">来源：westock-data 龙虎榜/lhb + 涨跌停接口 @ 2026-07-28</span>
-</section>
-
-<!-- ⭐ 交易日历 -->
-<section id="sec-calendar">
-  <h2><span class="num">⭐</span> 交易日历</h2>
-  <div class="sec-desc">今日重要事件：财报披露 / 分红除权 / 限售解禁 / 股东大会等。基于 westock-data calendar 接口。</div>
-
-  <div class="archive-item">
-    <span class="ar-time">2026-07-29</span>
-    <span class="ar-content">A 股交易日（周三）。美联储议息会议前夜（北京时间 7/30 凌晨公布利率决议）。</span>
-  </div>
-  <div class="archive-item">
-    <span class="ar-time">2026-07-30 (明日)</span>
-    <span class="ar-content"><strong>美联储议息会议</strong>公布利率决议（北京时间 7/30 凌晨 02:00）；多家超大型科技公司财报（苹果/微软/谷歌/亚马逊/ Meta 等）。</span>
-  </div>
-  <div class="archive-item">
-    <span class="ar-time">2026-07-31 (周四)</span>
-    <span class="ar-content"><strong>7 月政治局会议</strong>预期召开，确定下半年政策基调（扩内需居首）。多家上市公司中报披露密集期。</span>
-  </div>
-  <div class="archive-item">
-    <span class="ar-time">2026-08-01 (周五)</span>
-    <span class="ar-content">PMI 数据公布；多家 A 股上市公司分红除权日集中；限售解禁压力测试。</span>
-  </div>
-  <span class="sec-src">来源：westock-data calendar + WebSearch 财经日历 @ 2026-07-29</span>
-</section>
-
-<!-- 数据架构 & 推送计划 -->
-<section id="sec-arch">
-  <h2 style="border-bottom:2px solid var(--border-strong);">▎数据架构 & 推送计划</h2>
-
-  <div class="data-arch">
-    <h3>📊 数据层架构（多源交叉验证）</h3>
-    <div class="arch-flow">
-      <div class="arch-col primary">
-        <div class="ac-title">主数据源</div>
-        <div class="ac-item">同花顺 Financial-API（基础行情免费）</div>
-        <div class="ac-item">覆盖：A 股/港股/美股/指数/板块/财报</div>
-        <div class="ac-item">实时性：T+0 盘中实时</div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>实用资源（可直接打开）</div>
+        <div class="res-grid">
+          <div class="res-item">
+            <div class="ri-icon">📚</div><div class="ri-cat">书籍</div>
+            <ul>
+              <li>《聪明的投资者》格雷厄姆</li>
+              <li>《财报就像一本故事书》</li>
+              <li>《投资最重要的事》霍华德·马克斯</li>
+            </ul>
+          </div>
+          <div class="res-item">
+            <div class="ri-icon">🌐</div><div class="ri-cat">网站</div>
+            <ul>
+              <li><a href="https://www.cninfo.com.cn" target="_blank">巨潮资讯网（公告）</a></li>
+              <li><a href="https://www.eastmoney.com" target="_blank">东方财富（行情）</a></li>
+              <li><a href="https://moni.10jqka.com.cn" target="_blank">同花顺模拟交易</a></li>
+              <li><a href="https://www.sac.net.cn" target="_blank">中国证券业协会</a></li>
+            </ul>
+          </div>
+          <div class="res-item">
+            <div class="ri-icon">🎥</div><div class="ri-cat">视频</div>
+            <ul>
+              <li><a href="https://www.bilibili.com" target="_blank">B站财报分析教学</a></li>
+              <li><a href="https://www.bilibili.com" target="_blank">K线图基础系列</a></li>
+              <li><a href="https://www.youtube.com" target="_blank">技术分析入门</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="arch-col fund">
-        <div class="ac-title">资金面补充</div>
-        <div class="ac-item">a-stock-data（资金流向/量价）</div>
-        <div class="ac-item">覆盖：北向资金/主力资金/成交量异动</div>
-        <div class="ac-item">实时性：T+0 盘中实时</div>
+    </section>
+
+    <!-- 赚钱了吗 -->
+    <section class="page" id="page-xhs">
+      <div class="page-head">
+        <div class="page-title">赚钱了吗</div>
+        <div class="page-desc">小红书起号 · 每日拆解一个爆款 · 拆封面 / 标题 / 结构 / 文案 / 标签</div>
       </div>
-      <div class="arch-col backup">
-        <div class="ac-title">备用 / 交叉验证</div>
-        <div class="ac-item">westock-data（腾讯自选股）</div>
-        <div class="ac-item">levistock（同类备用）</div>
-        <div class="ac-item">WebSearch 公开媒体兜底</div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>今日拆解 <span class="tag-ml" id="xhsDate">--</span></div>
+        <div style="margin-bottom:14px;"><button class="btn btn-ghost btn-sm" onclick="speakXhs(this)">🔊 朗读拆解</button></div>
+        <div class="breakdown-grid">
+          <div class="cover-preview" id="coverPreview">
+            <span class="cv-tag" id="cvTag">美食</span>
+            <div class="cv-title" id="cvTitle">加载中…</div>
+            <div class="cv-sub" id="cvSub">--</div>
+          </div>
+          <div>
+            <div class="bd-dim"><div class="bd-dim-head"><div class="bd-dim-icon">🖼</div><div class="bd-dim-title">封面分析</div></div><div class="bd-dim-body" id="bdCover"></div></div>
+            <div class="bd-dim"><div class="bd-dim-head"><div class="bd-dim-icon">T</div><div class="bd-dim-title">标题公式</div></div><div class="bd-dim-body" id="bdTitle"></div></div>
+            <div class="bd-dim"><div class="bd-dim-head"><div class="bd-dim-icon">≡</div><div class="bd-dim-title">内容结构</div></div><div class="bd-dim-body" id="bdContent"></div></div>
+            <div class="bd-dim"><div class="bd-dim-head"><div class="bd-dim-icon">✎</div><div class="bd-dim-title">文案节奏</div></div><div class="bd-dim-body" id="bdCopy"></div></div>
+            <div class="bd-dim"><div class="bd-dim-head"><div class="bd-dim-icon">#</div><div class="bd-dim-title">标签 & BGM</div></div><div class="bd-dim-body" id="bdTag"></div></div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>完整爆款文案（示例·可直接学习） <span class="tag-ml">照着结构改你自己的</span></div>
+        <div class="copy-box" id="xhsCopy">加载中…</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>可直接套用的标题模板 <span class="tag-ml">填空即用</span></div>
+        <div id="xhsTemplates">加载中…</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>今日行动</div>
+        <div class="action-box" id="xhsAction"><span class="ab-icon">🎯</span><span class="ab-text">加载中…</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>爆款公式参考</div>
+        <div class="formula-grid">
+          <div class="formula-card"><div class="fc-eq">痛点 + 解决方案</div><div class="fc-result">→ 收藏</div></div>
+          <div class="formula-card"><div class="fc-eq">常识 + 反认知</div><div class="fc-result">→ 评论</div></div>
+          <div class="formula-card"><div class="fc-eq">身份 + 困境 + 逆袭</div><div class="fc-result">→ 涨粉</div></div>
+          <div class="formula-card"><div class="fc-eq">好奇心 + 揭秘</div><div class="fc-result">→ 完播</div></div>
+        </div>
+        <div class="tip-box" style="margin-top:16px;margin-bottom:0;">
+          <div class="tip-label">起号建议</div>
+          <p>先找 <b>5-10个</b>同领域对标账号，拆解封面/标题/结构；建立<b>选题库</b>，避免每天从零创作。日更或隔日更，数据稳定后再考虑变现。</p>
+        </div>
+      </div>
+    </section>
 
-  <h3 style="margin:24px 0 12px;font-size:15px;">📅 推送时间表（A股交易日 周一~周五）</h3>
-  <table class="schedule-table">
-    <thead><tr><th style="width:140px;">时间</th><th style="width:180px;">automation</th><th>内容</th></tr></thead>
-    <tbody>
-      <tr><td class="time">09:00</td><td>automation-1785243908827</td><td>美股盘前行情分析：道指/标普/纳指/纳指100 + 龙头个股 + 对 A 股开盘影响预判</td></tr>
-      <tr><td class="time">09:00</td><td>automation-1785246082959</td><td>每日动态低位赛道 + 三只股票推荐 + 三只科技股推荐 + 部署 CloudStudio</td></tr>
-      <tr><td class="time">09:25</td><td>automation-1785243908658</td><td>A 股开盘前行情看板：大盘概览 + 行业热力 + 资金流 + 风格轮动 + 北向资金 + 研判</td></tr>
-      <tr><td class="time">16:30 (盘后)</td><td>计划新增</td><td>A 股盘后复盘：全日交易总结 + 板块轮动 + 资金流向 + 明日展望</td></tr>
-    </tbody>
-  </table>
+    <!-- 好好吃饭 -->
+    <section class="page" id="page-food">
+      <div class="page-head">
+        <div class="page-title">好好吃饭</div>
+        <div class="page-desc">每天一道家常菜 · 真实菜品图 · 辣 / 不辣随心切换</div>
+      </div>
+      <div class="card">
+        <div class="recipe-hero">
+          <div class="recipe-img" id="recipeImgWrap">
+            <img id="recipeImgEl" alt="菜品图">
+            <span class="emoji-fb" id="recipeEmoji">🍲</span>
+          </div>
+          <div>
+            <h3 id="recipeName">加载中…</h3>
+            <div class="recipe-meta">
+              <span>⏱ <span id="recipeTime">--</span></span>
+              <span>👥 <span id="recipeServes">--</span></span>
+              <span class="rating">⭐ <span id="recipeRating">--</span> <span class="stars">★★★★★</span></span>
+            </div>
+            <div style="margin-bottom:16px;font-size:14px;color:var(--ink-soft);" id="recipeDesc">--</div>
+            <div class="spice-toggle">
+              <button class="active" data-spice="mild" onclick="switchSpice('mild')">🌶 辣版</button>
+              <button data-spice="notspicy" onclick="switchSpice('notspicy')">🍵 不辣版</button>
+            </div>
+            <div style="margin-top:18px;font-size:13px;color:var(--ink-soft);"><span id="spiceNote">💡 辣版放辣椒粉和干辣椒，麻辣过瘾</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;">
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title"><span class="dot"></span>食材清单</div>
+          <div class="ingredients" id="ingredients"></div>
+        </div>
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-title"><span class="dot"></span>做法步骤 <button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="speakRecipe(this)">🔊 朗读步骤</button></div>
+          <div class="steps" id="steps"></div>
+        </div>
+      </div>
+    </section>
 
-  <h3 style="margin:24px 0 12px;font-size:15px;">🛡️ 真实性保障</h3>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;color:var(--text-soft);line-height:1.7;">
-    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:12px 14px;">
-      <strong style="color:#065f46;">✅ 数据真实性原则</strong>
-      <ul style="margin:6px 0 0 18px;padding:0;">
-        <li>所有数字来自官方 API 或权威数据源</li>
-        <li>非爬虫模拟数据</li>
-        <li>每个数据点带来源 + 时间戳</li>
-        <li>多源交叉验证（主+补+备）</li>
-      </ul>
-    </div>
-    <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:6px;padding:12px 14px;">
-      <strong style="color:#92400e;">⚠️ 口径标注原则</strong>
-      <ul style="margin:6px 0 0 18px;padding:0;">
-        <li>盘中数据 vs 盘后数据明确区分</li>
-        <li>北向资金：龙虎榜口径 ≠ 全市场净流入</li>
-        <li>行业资金流：统计推断口径</li>
-        <li>题材型赛道：未确认基本面底部</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- 数据来源 & 免责声明 -->
-<section id="sec-footnote">
-  <h2 style="border-bottom:2px solid var(--border-strong);">▎数据来源 & 免责声明</h2>
-  <div class="footnote">
-    <p><strong>数据来源：</strong></p>
-    <ul>
-      <li>A 股指数 / 行业板块 / 资金流 / 风格轮动：<strong>同花顺 Financial-API（主）+ westock-data（备用）</strong></li>
-      <li>美股指数：<strong>同花顺 Financial-API（主）+ westock-data（备用）</strong></li>
-      <li>北向资金：<strong>a-stock-data（资金面）+ 公开媒体</strong>（21世纪经济报道/证券时报/巨灵数据）</li>
-      <li>行业资金流：<strong>a-stock-data（主）+ westock-data sector ranking（备用）</strong></li>
-      <li>财报 / 财务数据：<strong>westock-data finance / 同花顺</strong></li>
-      <li>资讯 / 政策新闻：<strong>同花顺资讯 + WebSearch 公开媒体</strong></li>
-      <li>选股 / 排行榜：<strong>westock-tool + westock-data</strong></li>
-    </ul>
-    <p style="margin-top:12px;"><strong>口径说明：</strong></p>
-    <ul>
-      <li>数据口径与同花顺/东方财富等主流行情终端一致（均来自沪深交易所实时行情）</li>
-      <li>盘中实时数据 vs 盘后数据明确区分，已在每个数据点标注</li>
-      <li>所有数字禁止编造，禁止用记忆作答，必须从实时数据接口拉取</li>
-      <li>主力资金流 / 行业资金流为统计推断口径，参考意义有限</li>
-    </ul>
-    <p style="margin-top:12px;"><strong>免责声明：</strong>本看板仅为市场数据可视化与公开信息整理，<strong>不构成任何投资建议</strong>。市场有风险，投资需谨慎。所有判断均基于公开数据，数据准确性受限于数据源更新时间，请以交易所披露为准。</p>
-    <p style="margin-top:12px;color:var(--text-faint);font-size:10px;">生成时间：北京 2026-07-29 11:13 · 由 wb-finance-skill + westock-data + westock-tool + WorkBuddy 自动生成 · 部署于 CloudStudio</p>
-  </div>
-</section>
-
-</main>
+  </main>
 </div>
 
-<script>
-(function(){
-  const links=document.querySelectorAll('aside nav a');
-  const sections=document.querySelectorAll('main section');
-  const obs=new IntersectionObserver(entries=>{
-    entries.forEach(e=>{if(e.isIntersecting){const id=e.target.id;links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+id));}});
-  },{rootMargin:'-80px 0px -70% 0px'});
-  sections.forEach(s=>{if(s.id)obs.observe(s);});
-})();
-</script>
+<div class="word-popup" id="wordPopup">
+  <div class="wp-word" id="wpWord">word</div>
+  <div class="wp-phonetic" id="wpPhonetic">/.../</div>
+  <div class="wp-meaning" id="wpMeaning">查询中…</div>
+  <button class="btn btn-primary btn-sm wp-save" onclick="saveWord()">⭐ 收藏到笔记</button>
+</div>
 
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 数据 ============ */
+const QUOTES = ["三万天，听起来很长，其实只是认真地过好每一天。","种一棵树最好的时间是十年前，其次是现在。","你不需要很厉害才能开始，但你需要开始才能很厉害。","今天的努力，是明天的底气。","慢慢来，比较快。","把每一件简单的事做好就是不简单。","不要等待机会，而要创造机会。","成功的秘诀就是每天都比昨天更努力一点。","生活不是等待风暴过去，而是学会在雨中跳舞。","你现在的付出，都会是一种沉淀。","读书是在别人思想的帮助下，建立起自己的思想。","投资自己，是这个世界上唯一稳赚不赔的生意。","自律的顶端是享受，孤独的顶端是自由。","不积跬步，无以至千里；不积小流，无以成江海。","世界上只有一种英雄主义，就是看清生活的真相之后依然热爱生活。","人生没有彩排，每天都是现场直播。","当你真心渴望某样东西时，整个宇宙都会联合起来帮助你。","越是艰难处，越是修心时。","千里之行，始于足下。","每天进步一点点，就是最好的进步。","你以为的极限，其实只是别人的起点。","好好吃饭，好好睡觉，好好学习，这就是最好的人生。","先完成，再完美。","不要为模糊的未来担忧，要为清晰的现在努力。","生活的意义不在于活了多少天，而在于有多少天是真正活过的。","做一个长期主义者，时间会给你答案。","今天吃过的苦，都会变成明天走过的路。","学习是一种信仰，成长是一种习惯。","把时间分给睡眠、书籍、运动和花草，分给你对这个世界的热爱。","你只管努力，剩下的交给时间。","心若没有栖息的地方，到哪里都是流浪。","一个人最大的破产是绝望，最大的资产是希望。","复利是世界第八大奇迹，知识也会复利。","不要在该奋斗的年纪选择安逸。","把简单的事情做到极致，就是绝招。","行动是治愈恐惧的良药，犹豫拖延将不断滋养恐惧。","日拱一卒，功不唐捐。","最暗的夜，才能看见最美的星。","生活明朗，万物可爱，人间值得，未来可期。","读书破万卷，下笔如有神。","人生没有白走的路，每一步都算数。","愿你成为自己的太阳，无需凭借谁的光。","今天的你，是昨天的你所想；明天的你，是今天的你所做。","认真生活的人，生活绝不会亏待他。","投资的第一原则是不要亏钱，第二原则是记住第一原则。","阅读是最低成本的升值方式。","自律给我自由。","不乱于心，不困于情，不畏将来，不念过往。","成长是一场和自己的比赛，不要担心别人做得比你好。","时间是最公平的，它给每个人都是24小时。","每个优秀的人，都有一段沉默的时光。","你的气质里，藏着你读过的书和走过的路。","做难事必有所得。","天行健，君子以自强不息。","脚踏实地，仰望星空。","每一个不曾起舞的日子，都是对生命的辜负。","机会总是留给有准备的人。","细节决定成败，态度决定高度。","路漫漫其修远兮，吾将上下而求索。","勤能补拙是良训，一分辛苦一分才。","心怀热爱，奔赴山海。","成长就是把哭声调成静音的过程。","你对待时间的样子，就是你未来的样子。","认真对待一日三餐，就是认真对待生活。","投资是认知的变现，学习是认知的源头。","英语是一扇窗，推开它，世界更大。","人间烟火气，最抚凡人心。","今天也要好好吃饭呀。","把热爱做到极致，便成了价值。","不和别人比，只和昨天的自己比。","日日行，不怕千万里；常常做，不怕千万事。","愿你有前进一寸的勇气，亦有后退一尺的从容。","保持热爱，奔赴下一场山海。","知足且上进，温柔而坚定。","把生活过成想要的样子，是一辈子的事业。","愿你眼里有光，心中有爱，钱包有钱。","努力学习的人，运气不会太差。","每一个清晨，都是重新开始的机会。","坚持是一种信仰，热爱是一种力量。","三万天不多，三万天也不少，刚刚好够你成为一个很棒的人。","热爱可抵岁月漫长。","愿你历尽千帆，归来仍是少年。","好好吃饭，好好学习，好好生活。"];
+
+const SHOWS = [
+  {name:"老友记 Friends",meta:"S03E02 · 中央公园咖啡馆 · 日常交流",level:"初中级",poster:"☕",sentences:[
+    {en:"Hey, what are you guys doing here?",zh:"嘿，你们怎么在这儿？"},
+    {en:"We were just about to grab some coffee. Wanna join us?",zh:"我们正准备去喝杯咖啡。要一起来吗？"},
+    {en:"I'd love to, but I have to work on this report tonight.",zh:"我很想去，但我今晚得赶这份报告。"},
+    {en:"Come on, you've been working all day. Take a break!",zh:"拜托，你工作一整天了。休息一下吧！"},
+    {en:"You know what? You're right. Coffee sounds great right now.",zh:"你知道吗？你说得对。现在来杯咖啡听起来棒极了。"},
+    {en:"That's the spirit! Let's go, my treat.",zh:"这才对嘛！走，我请客。"}]},
+  {name:"摩登家庭 Modern Family",meta:"S05E14 · 家庭日常 · 语速适中",level:"中级",poster:"👨‍👩‍👧",sentences:[
+    {en:"Did anyone see my keys this morning?",zh:"今天早上有人看到我的钥匙吗？"},
+    {en:"I think you left them on the kitchen counter again.",zh:"我想你又把它们落在厨房台面上了。"},
+    {en:"That's the third time this week! I need to be more organized.",zh:"这是这周第三次了！我得更有条理才行。"},
+    {en:"Or you could just put a hook by the door, problem solved.",zh:"或者你可以在门边挂个钩子，问题就解决了。"},
+    {en:"Why didn't I think of that? You're a genius.",zh:"我怎么没想到？你真是个天才。"},
+    {en:"I've been telling you this for three years, honey.",zh:"亲爱的，这话我跟你说三年了。"}]},
+  {name:"我们这一天 This Is Us",meta:"S02E08 · 温情对话 · 发音清晰",level:"中高级",poster:"💛",sentences:[
+    {en:"Sometimes I wonder if I'm doing the right thing.",zh:"有时候我会想，我做的到底对不对。"},
+    {en:"Hey, nobody has all the answers. That's not how life works.",zh:"嘿，没有人什么都知道。生活不是那样的。"},
+    {en:"But what if I'm just pretending to know what I'm doing?",zh:"但如果我只是在假装自己知道在做什么呢？"},
+    {en:"We're all pretending, kid. That's the big secret.",zh:"我们都在假装，孩子。这就是最大的秘密。"},
+    {en:"So how do we keep going without falling apart?",zh:"那我们怎么继续走下去而不崩溃呢？"},
+    {en:"You lean on the people who love you. That's how.",zh:"依靠那些爱你的人。就是这样。"}]}
+];
+
+const DICT = {
+  consumer:{p:"/kənˈsjuːmə(r)/",m:"n. 消费者"},
+  inflation:{p:"/ɪnˈfleɪʃn/",m:"n. 通货膨胀"},
+  modestly:{p:"/ˈmɒdɪstli/",m:"adv. 温和地，适度地"},
+  easing:{p:"/ˈiːzɪŋ/",m:"v. 缓解（现在分词）"},
+  concerns:{p:"/kənˈsɜːnz/",m:"n. 担忧（复数）"},
+  labor:{p:"/ˈleɪbə(r)/",m:"n. 劳工"},
+  groceries:{p:"/ˈɡrəʊsəriz/",m:"n. 食品杂货"},
+  gasoline:{p:"/ˈɡæsəliːn/",m:"n. 汽油"},
+  housing:{p:"/ˈhaʊzɪŋ/",m:"n. 住房"},
+  climb:{p:"/klaɪm/",m:"v. 攀升"},
+  economists:{p:"/ɪˈkɒnəmɪsts/",m:"n. 经济学家"},
+  federal:{p:"/ˈfedərəl/",m:"adj. 联邦的"},
+  reserve:{p:"/rɪˈzɜːv/",m:"n. 储备"},
+  pause:{p:"/pɔːz/",m:"v. 暂停"},
+  interest:{p:"/ˈɪntrəst/",m:"n. 利息；兴趣"},
+  rate:{p:"/reɪt/",m:"n. 比率；利率"},
+  renewable:{p:"/rɪˈnjuːəbl/",m:"adj. 可再生的"},
+  energy:{p:"/ˈenədʒi/",m:"n. 能源"},
+  shares:{p:"/ʃeəz/",m:"n. 股份（复数）"},
+  jumped:{p:"/dʒʌmpt/",m:"v. 大涨；跳跃"},
+  analysts:{p:"/ˈænəlɪsts/",m:"n. 分析师"},
+  volatile:{p:"/ˈvɒlətaɪl/",m:"adj. 波动的"}
+};
+
+const NEWS_TRANSCRIPT = {title:"U.S. Inflation Eases as Food and Gas Prices Fall",sentences:[
+  {en:"U.S. consumer prices rose modestly last month, easing concerns about inflation.",zh:"美国消费者物价上月温和上涨，缓解了对通胀的担忧。"},
+  {en:"The Labor Department reported that the cost of groceries and gasoline fell.",zh:"劳工部报告称，食品杂货和汽油的价格有所下降。"},
+  {en:"However, housing prices continued to climb across the country.",zh:"然而，全国各地的房价继续攀升。"},
+  {en:"Economists say the data suggests the Federal Reserve may pause interest rate hikes.",zh:"经济学家表示，这份数据暗示美联储可能暂停加息。"},
+  {en:"Meanwhile, a major technology company announced plans to invest in renewable energy.",zh:"与此同时，一家大型科技公司宣布了投资可再生能源的计划。"},
+  {en:"Shares of the company jumped on the news.",zh:"该公司股价因这一消息而大涨。"},
+  {en:"Analysts expect the market to remain volatile in the coming weeks.",zh:"分析师预计未来几周市场仍将波动。"}
+]};
+
+const INVEST_PLAN = {
+  1:{label:"第1个月 · 建立认知框架（只学不买）",weeks:[
+    {w:"第1周",t:"搞懂股票与股市运作",c:"学懂<b>股票是什么</b>、A股/H股/美股的区别、什么是「一手」（100股）、<b>T+1交易制度</b>、涨跌停板限制。",
+     lesson:`<h4>一、股票到底是什么</h4><p>股票是<b>公司所有权的凭证</b>。买入1股，你就成为这家公司的股东，享有分红和投票权。股价涨跌反映的是市场对公司未来价值的预期。</p><h4>二、股市如何运作</h4><p>股市是一个<b>撮合交易</b>市场：买方出价、卖方要价，价格匹配就成交。当前买一价和卖一价之间的差叫<b>买卖价差</b>。股价由<b>供需关系</b>决定——想买的人多就涨，想卖的人多就跌。</p><h4>三、A股 / H股 / 美股的区别</h4><ul><li><b>A股</b>：人民币计价，沪深北交易所上市，散户为主</li><li><b>H股</b>：港币计价，港交所上市，机构为主</li><li><b>美股</b>：美元计价，纽交所/纳斯达克上市，1股起买</li></ul><h4>四、必须记住的交易规则</h4><ul><li><b>一手=100股</b>：A股最小交易单位，买入须是100股的整数倍</li><li><b>T+1</b>：今天买入，明天才能卖出</li><li><b>涨跌停</b>：主板±10%，创业板/科创板±20%，ST股±5%</li></ul><div class="kp">🔑 记忆要点：股票=公司所有权；A股100股起、T+1、主板±10%涨跌停。</div>`},
+    {w:"第2周",t:"理解股价与交易成本",c:"股价短期受<b>市场资金和情绪</b>影响，长期由<b>公司内在价值</b>决定；学习佣金、印花税等成本。",
+     lesson:`<h4>一、股价短期 vs 长期</h4><p><b>短期</b>（天/周）：受资金量和情绪影响，利好推涨、利空砸盘，波动大、难预测。<br><b>长期</b>（年）：由公司<b>内在价值</b>（盈利能力）决定，业绩持续增长的公司股价终会上涨。这就是"短期是投票机、长期是称重机"。</p><h4>二、交易成本有哪些</h4><ul><li><b>佣金</b>：券商收，约万2.5（0.025%），单笔最低5元</li><li><b>印花税</b>：卖出时收0.05%（买入不收）</li><li><b>过户费</b>：沪市收0.001%，深市免</li></ul><h4>三、算笔账</h4><p>买入1万元：佣金5元（按万2.5应是2.5元，但最低5元）。卖出1万元：佣金5元+印花税5元=10元。<b>一买一卖成本约15元</b>，频繁交易会被成本吃掉利润。</p><div class="kp">🔑 记忆要点：短期看情绪、长期看价值；佣金最低5元、印花税卖出0.05%；别频繁交易。</div>`},
+    {w:"第3周",t:"基本面分析入门",c:"学习<b>市盈率（PE）</b>、<b>市净率（PB）</b>、<b>ROE</b>，理解各自衡量什么。",
+     lesson:`<h4>一、市盈率 PE = 股价 ÷ 每股收益</h4><p>衡量"按当前盈利多少年回本"。PE=20表示20年回本。<b>同行业对比</b>才有意义，PE低=相对便宜，但也要看增长。</p><h4>二、市净率 PB = 股价 ÷ 每股净资产</h4><p>衡量股价相对净资产的溢价。PB<1叫"破净"，可能被低估，但要排除亏损公司。银行股常用PB。</p><h4>三、ROE = 净利润 ÷ 净资产</h4><p>衡量公司<b>赚钱效率</b>，巴菲特最看重。<b>ROE>15%且连续多年</b>是优质公司的标志。</p><h4>四、实战用法</h4><p>组合使用：ROE连续5年>15%（赚钱强）+ PE低于行业平均（不贵）+ 行业前景好，三者满足再深入研究。</p><div class="kp">🔑 记忆要点：PE看贵不贵、PB看资产、ROE看赚钱效率；ROE>15%连续5年是硬指标。</div>`},
+    {w:"第4周",t:"技术分析入门",c:"学习<b>K线图基础</b>、均线（MA）、成交量。",
+     lesson:`<h4>一、K线（蜡烛图）</h4><p>一根日K线含4个价格：<b>开盘、收盘、最高、最低</b>。A股<b>红色=涨</b>（收盘>开盘），<b>绿色=跌</b>。实体=开收之间，上下细线=影线。</p><h4>二、均线 MA</h4><p>MA5=5日平均价连线，MA20=20日平均。均线向上=多头排列=强势。<b>股价站上MA20</b>常被视为中期走强信号。</p><h4>三、成交量</h4><p>放量上涨=资金认可、可信度高；缩量上涨=跟进不足、需警惕。<b>量价配合</b>是核心：价涨量增健康，价涨量减背离。</p><h4>四、怎么看盘</h4><p>先看大盘（上证指数）方向→再看行业板块→最后选个股。顺势而为，不逆大盘操作。</p><div class="kp">🔑 记忆要点：A股红涨绿跌；MA20是中期分水岭；量价配合看真假突破。</div>`}]},
+  2:{label:"第2个月 · 模拟与实践",weeks:[
+    {w:"第5-6周",t:"开通模拟盘实操",c:"推荐<b>同花顺/东方财富模拟交易</b>，每周操作3次，熟悉买卖流程。",
+     lesson:`<h4>一、开通模拟盘</h4><p>推荐<b>同花顺/东方财富</b>模拟交易，免费、行情真实、资金虚拟。注册后通常给10万虚拟资金。</p><h4>二、操作流程（每周3次）</h4><ol><li><b>选股</b>：从熟悉的行业（如消费、新能源）挑2-3只</li><li><b>买入</b>：输入代码、价格、数量（100股倍数），点买入</li><li><b>挂单</b>：可设限价单（指定价格成交）</li><li><b>卖出</b>：T+1后才能卖，体会涨跌心跳</li><li><b>复盘</b>：记录每笔买卖理由，对错都写</li></ol><h4>三、模拟期目标</h4><p>不追求盈利，追求<b>熟悉流程</b>：怎么下单、怎么看盘、怎么算盈亏、怎么控制情绪。把错误犯在模拟盘，真金白银时才少亏。</p><div class="kp">🔑 记忆要点：模拟盘练流程不练盈利；每周3次+复盘记录；把错犯在模拟里。</div>`},
+    {w:"第7-8周",t:"学习选股逻辑",c:"用「<b>连续5年ROE>15% + 市盈率低于行业平均</b>」初步筛选标的。",
+     lesson:`<h4>一、从熟悉行业出发</h4><p>能力圈原则：只投你看得懂的行业。做餐饮就看消费，做IT就看科技。<b>看得懂才能判断好坏</b>。</p><h4>二、量化筛选公式</h4><p>用条件筛选器（东方财富/同花顺都有）设置：<br>① <b>ROE连续5年>15%</b>（赚钱稳定）<br>② <b>PE低于行业平均</b>（不贵）<br>③ <b>营业收入连续3年增长</b>（在长大）<br>④ <b>资产负债率<60%</b>（不缺钱）</p><h4>三、筛出后做什么</h4><p>筛出10-20只→逐个看<b>财报</b>（巨潮资讯网下载）→看主营业务、毛利率、现金流→挑3-5只加入自选观察。</p><h4>四、避坑</h4><p>不碰ST股、不碰连年亏损、不碰看不懂的商业模式。<b>看不懂就不投</b>是最大的安全。</p><div class="kp">🔑 记忆要点：能力圈内选股；ROE>15%+PE低于行业+营收增长；看不懂不投。</div>`}]},
+  3:{label:"第3个月 · 体系构建",weeks:[
+    {w:"第9-10周",t:"仓位管理与止损",c:"<b>单只仓位不超过总资金20%-30%</b>，预设止损线（如-8%），严格执行。",
+     lesson:`<h4>一、仓位管理铁律</h4><p><b>单只股票仓位不超过总资金的20%-30%</b>。10万资金单只最多2-3万。分散到4-5只不同行业，降低单只暴雷风险。</p><h4>二、止损纪律</h4><p>买入前就定好<b>止损线</b>（如-8%）。跌破立即卖，不抱侥幸、不补仓。<b>止损是保护本金，不是认输</b>。一次-8%止损，10次才亏一半；不止损一次-50%就腰斩。</p><h4>三、仓位示例</h4><p>10万资金：股票A 2万、B 2万、C 2万、D 2万，留2万现金机动。<b>永远不满仓</b>，留子弹应对机会和风险。</p><h4>四、止盈同样重要</h4><p>涨20%可卖一半锁定利润，剩余设保本止盈线。会买是徒弟、会卖才是师傅。</p><div class="kp">🔑 记忆要点：单只≤30%、分散4-5只；止损-8%铁律；永远留现金。</div>`},
+    {w:"第11-12周",t:"投资心理学",c:"克服<b>贪婪和恐惧</b>，建立交易纪律，做到知行合一。",
+     lesson:`<h4>一、贪婪与恐惧</h4><p>涨了想更多（贪婪）→高位加仓被套；跌了怕更跌（恐惧）→低位割肉。<b>追涨杀跌</b>是散户亏钱主因。逆向思维：别人贪婪我恐惧，别人恐惧我贪婪。</p><h4>二、市场先生</h4><p>格雷厄姆比喻：市场是个情绪化的"市场先生"，每天报价，有时亢奋（天价）有时抑郁（贱卖）。你不必跟随他，而是<b>利用他的情绪</b>——低价买入，高价卖出。</p><h4>三、建立交易纪律</h4><ol><li>每笔交易前写<b>买卖理由</b></li><li>严格执行止损止盈，不临时改主意</li><li>不因一次盈利骄傲、不因一次亏损气馁</li><li>定期复盘，对错都记录</li></ol><h4>四、知行合一</h4><p>知道不等于做到。真正难的是<b>情绪上来时还能执行纪律</b>。模拟盘练流程，小仓位练心态，逐步加大。</p><div class="kp">🔑 记忆要点：追涨杀跌是亏钱主因；利用市场先生情绪；纪律>预测。</div>`}]}
+};
+
+const XHS_DATA = [
+  {tag:"美食",q:"home cooking food plate",title:"30岁独居｜一个人也要好好吃饭",sub:"3道快手菜｜10分钟搞定",
+    cover:"封面字数<b>少</b>，只有标题+副标题；<b>有人脸</b>侧面生活感；视觉重点是<b>大字标</b>+暖色食物背景。",
+    title_f:"「<b>30岁独居</b>（身份人群）+ <b>一个人也要好好吃饭</b>（情绪共鸣）」。<b>身份+困境+逆袭</b>公式。",
+    content:"开头直接点题；中间分<b>3步</b>（早/中/晚各一道菜）配成品图+一句话；结尾引导互动「你一个人时会做什么菜？」",
+    copy:"全程<b>短句</b>，每句不超15字；多用 🍳✨ 等<b>表情符号</b>；用「｜」分隔短语，节奏明快。",
+    tag_b:"标签：#独居美食 #一人食 #快手菜 #治愈系。BGM：轻快日系纯音乐。",
+    sampleCopy:`一个人住，更要好好吃饭🍚
+
+别再用泡面糊弄自己啦
+今天分享3道10分钟搞定的独居快手菜👇
+
+① 早餐·牛油果鸡蛋吐司🥑
+全麦吐司+水煮蛋捣碎+牛油果片
+2分钟搞定 蛋白质+好脂肪拉满
+
+② 午餐·番茄鸡蛋面🍜
+番茄炒出沙+加水煮面+淋蛋液
+酸甜暖胃 一个人也能吃满足
+
+③ 晚餐·蒜香西兰花虾仁🦐
+虾仁煎香+西兰花+蒜末
+低卡高蛋白 减肥也能吃饱
+
+💡 一个人不是糊弄的理由
+好好吃饭 是对自己最基础的温柔
+
+你一个人时最爱做什么菜？
+评论区告诉我呀👇
+
+#独居美食 #一人食 #快手菜 #治愈系 #打工人晚餐`,
+    titleTemplates:[
+      {t:"身份+情绪+解决方案",ex:"独居女孩｜一个人也要把日子过成诗"},
+      {t:"数字+时间+痛点",ex:"3道菜10分钟｜下班回家不糊弄"},
+      {t:"反差+共鸣",ex:"月薪3千也能吃好｜我的独居省钱食谱"}
+    ],
+    action:"今天模仿这条结构拍你的一顿饭：开头1句情绪 + 3个步骤（每步1图1句话） + 结尾1个互动问题。"},
+  {tag:"穿搭",q:"fashion outfit street style",title:"微胖女孩｜梨形身材显瘦穿搭公式",sub:"5个公式｜照穿不出错",
+    cover:"封面是<b>拼图对比</b>（显瘦 vs 显胖），视觉重点在<b>对比图</b>；字压在人物旁边；<b>有人脸+全身</b>。",
+    title_f:"「<b>微胖女孩</b>（身份痛点）+ <b>梨形身材</b>（精准人群）+ <b>显瘦穿搭公式</b>（解决方案）」。<b>数字+痛点+人群</b>。",
+    content:"开头一句「别再穿错啦」；中间<b>5个公式</b>每个配前后对比图；结尾「评论区告诉我你的身材类型」。",
+    copy:"用「<b>❌ 不要 / ✅ 这样穿</b>」对比句式；每条公式一句话总结；表情符号控制数量保持清爽。",
+    tag_b:"标签：#梨形身材 #微胖穿搭 #显瘦穿搭 #穿搭公式。BGM：舒缓女声英文歌。",
+    sampleCopy:`微胖梨形姐妹看过来！👇
+
+上身90斤 下身120斤的痛谁懂😭
+试了100套总结出5个显瘦公式
+照穿绝对不出错✅
+
+公式1⃣ 上松下紧
+宽松卫衣+紧身牛仔裤
+遮小肚子 显腿细
+
+公式2⃣ 同色系穿搭
+全身一个色系拉长比例
+视觉显瘦5斤不是梦
+
+公式3⃣ A字裙+短上衣
+遮胯宽+露腰线
+梨形身材天菜
+
+公式4⃣ 深色下半身
+黑裤黑裙永远神
+浅色放上半身
+
+公式5⃣ 高腰线永不过时
+高腰裤/高腰裙 提腰线
+腿长腿直全靠它
+
+❌ 避雷：紧身包臀裙、低腰裤、横条纹下半身
+
+你是哪种身材？评论区告诉我
+下期出苹果型身材攻略👇
+
+#梨形身材 #微胖穿搭 #显瘦穿搭 #穿搭公式 #微胖女孩`,
+    titleTemplates:[
+      {t:"身份+精准人群+解决方案",ex:"微胖女孩｜梨形身材显瘦5个公式"},
+      {t:"痛点+数字+结果",ex:"胯宽腿粗｜照穿这5套显瘦10斤"},
+      {t:"反差+逆袭",ex:"120斤也能穿出90斤｜梨形穿搭逆袭"}
+    ],
+    action:"找5个同领域对标账号，截图他们的封面，找出共性（构图/字号/配色），整理成你的封面参考库。"},
+  {tag:"理财",q:"money savings finance coins",title:"月薪5千｜我是怎么一年存下3万的",sub:"真实记账｜干货分享",
+    cover:"封面是<b>记账本实拍</b>+大字标题「存下3万」；<b>数字突出</b>白字高亮；无人物。",
+    title_f:"「<b>月薪5千</b>（身份痛点）+ <b>一年存下3万</b>（反认知结果）」。<b>常识+反认知</b>公式。",
+    content:"开头亮结果「3万不是省出来的，是规划出来的」；中间<b>3步法</b>（50/30/20分配+自动转账+记账复盘）。",
+    copy:"大量<b>数字和百分比</b>；短句+清单体；关键金额用💰标注；段落间空行便于截图。",
+    tag_b:"标签：#存钱 #记账 #理财小白 #搞钱。BGM：节奏感强的轻音乐。",
+    sampleCopy:`月薪5千 一年存下3万💰
+
+不是省出来的 是规划出来的！
+分享我的真实存钱法👇
+
+第一步·50/30/20分配
+工资到账立刻分3份：
+50%生活(2500) 30%储蓄(1500) 20%机动(1000)
+储蓄那份当天转走 眼不见为净
+
+第二步·自动转账
+设工资卡自动转储蓄账户
+根本不用意志力 机器替你存
+
+第三步·记账复盘
+每天1分钟记开销
+每月底复盘 哪些不该花
+我用随手记 免费够用
+
+💡 关键不是少花
+是先存后花 而不是花完再存
+
+一年下来 1500×12=18000
+加上年终奖+副业 存3万不难
+
+你的存钱方法是什么？
+评论区交流👇
+
+#存钱 #记账 #理财小白 #搞钱 #月薪5千`,
+    titleTemplates:[
+      {t:"身份+反认知结果",ex:"月薪5千｜我是怎么一年存下3万的"},
+      {t:"数字+方法+时间",ex:"3步存钱法｜6个月存够第一桶金"},
+      {t:"痛点+揭秘",ex:"存不下钱？因为你顺序错了"}
+    ],
+    action:"今天用50/30/20法分配你下个月工资：算出生活/储蓄/机动各多少，设好转账，先存后花。"},
+  {tag:"学习",q:"study desk books notebook coffee",title:"下班后2小时｜我是怎么坚持学英语的",sub:"方法+工具｜亲测有效",
+    cover:"封面是<b>桌面俯拍</b>（书+笔记本+咖啡），氛围感强；大字标题压在留白处；<b>无人物</b>。",
+    title_f:"「<b>下班后2小时</b>（时间痛点）+ <b>坚持学英语</b>（行动目标）」。<b>好奇心+揭秘</b>公式。",
+    content:"开头「不是自律，是方法」；中间<b>4个工具</b>（精听/跟读/背词/输出）每个配截图；结尾「工具清单评论区扣1」。",
+    copy:"每段<b>先结论后解释</b>；用「①②③④」编号；关键工具名加粗；语气像朋友分享。",
+    tag_b:"标签：#英语学习 #学习方法 #自律 #下班后提升。BGM：白噪音/Lo-fi。",
+    sampleCopy:`下班后2小时 我是这样学英语的📚
+
+不是靠自律 是靠方法！
+亲测3个月从哑巴英语到能开口👇
+
+工具1⃣ 精听（30min）
+NPR新闻原速听3遍
+第1遍盲听 第2遍看稿 第3遍跟读
+听不懂就降倍速 0.75×开始
+
+工具2⃣ 跟读（20min）
+影子跟读法
+播放一句 跟着读一句
+模仿语调和连读
+
+工具3⃣ 背词（10min）
+不背单词背句子
+遇到生词连整句一起记
+用Anki间隔复习
+
+工具4⃣ 输出（60min）
+每周写1篇英文日记
+不怕错 写出来才知道哪不会
+
+💡 别贪多 每天2小时坚持3个月
+比每周学1次每次6小时强10倍
+
+工具清单评论区扣1 我发你👇
+
+#英语学习 #学习方法 #自律 #下班后提升 #打工人`,
+    titleTemplates:[
+      {t:"时间+行动+揭秘",ex:"下班后2小时｜我是怎么坚持学英语的"},
+      {t:"痛点+反认知+方法",ex:"别再背单词了｜这样学英语才有效"},
+      {t:"身份+逆袭+数字",ex:"零基础3个月｜从哑巴英语到能开口"}
+    ],
+    action:"今天挑1条标题公式，套你的领域写5个标题，存到备忘录，下次发笔记直接用。"}
+];
+
+const RECIPES = [
+  {name:"毛血旺",emoji:"🌶",wiki:"Mao_xue_wang",time:"40分钟",serves:"2人份",rating:"8.5",desc:"川菜经典，一锅鲜香麻辣。辣版正宗过瘾，不辣版同样鲜香下饭。",
+    mild:{note:"💡 辣版放辣椒粉和干辣椒，麻辣过瘾，正宗重庆味",ingredients:[["鸭血","1盒"],["黄豆芽","200g"],["午餐肉","150g"],["毛肚","150g"],["干辣椒","一把"],["花椒","2勺"],["辣椒粉","2勺"],["蒜末","适量"],["火锅底料","2勺"]],steps:["黄豆芽焯水铺碗底","鸭血切块焯水去腥","热锅下火锅底料炒出红油，加干辣椒花椒","加清水烧开，下午餐肉和鸭血煮5分钟","最后下毛肚烫30秒捞出","连汤倒入碗中，撒蒜末辣椒粉，浇热油激发香气"]},
+    notspicy:{note:"💡 不辣版只放蒜末、花椒、白胡椒，鲜香暖胃",ingredients:[["鸭血","1盒"],["黄豆芽","200g"],["午餐肉","150g"],["毛肚","150g"],["蒜末","多放"],["花椒","1勺"],["白胡椒粉","1勺"],["浓汤宝","1个"],["葱花","适量"]],steps:["黄豆芽焯水铺碗底","鸭血切块焯水去腥","清水加浓汤宝煮开做高汤","下午餐肉和鸭血煮5分钟入味","最后下毛肚烫30秒捞出","连汤倒入碗中，撒蒜末、白胡椒粉、葱花，浇一勺热油"]}},
+  {name:"凉拌手撕鸡丝",emoji:"🍗",wiki:"Shredded_chicken",time:"25分钟",serves:"2人份",rating:"8.1",desc:"下厨房7477人做过的高分家常菜。香辣版开胃，麻油版清爽。",
+    mild:{note:"💡 香辣版：辣椒油+花椒粉，酸辣开胃",ingredients:[["鸡胸肉","1块"],["黄瓜","1根"],["辣椒油","2勺"],["花椒粉","1勺"],["生抽","2勺"],["香醋","1勺"],["蒜末","适量"],["白芝麻","1勺"]],steps:["鸡胸肉冷水下锅，加葱姜料酒煮15分钟捞出","放凉后用手顺着纹理撕成细丝","黄瓜切丝铺盘底","鸡肉丝铺在黄瓜上","调汁：生抽+香醋+辣椒油+花椒粉+蒜末拌匀","淋汁撒白芝麻，拌匀即可"]},
+    notspicy:{note:"💡 麻油版：芝麻油+少许香醋，清爽不腻",ingredients:[["鸡胸肉","1块"],["黄瓜","1根"],["芝麻油","2勺"],["生抽","2勺"],["香醋","半勺"],["蒜末","适量"],["白芝麻","1勺"],["枸杞","少许"]],steps:["鸡胸肉冷水下锅，加葱姜料酒煮15分钟捞出","放凉后用手顺着纹理撕成细丝","黄瓜切丝铺盘底","鸡肉丝铺在黄瓜上","调汁：生抽+香醋+芝麻油+蒜末拌匀","淋汁撒白芝麻和枸杞，拌匀即可"]}},
+  {name:"红烧肉",emoji:"🥩",wiki:"Red_braised_pork_belly",time:"60分钟",serves:"3人份",rating:"8.8",desc:"肥而不腻入口即化，国民家常菜。辣版加郫县豆瓣，不辣版纯糖色。",
+    mild:{note:"💡 辣版加郫县豆瓣酱，微辣回甘，下饭神器",ingredients:[["五花肉","500g"],["冰糖","30g"],["郫县豆瓣酱","1勺"],["生抽","2勺"],["老抽","1勺"],["料酒","2勺"],["八角","2个"],["干辣椒","3个"],["姜片","适量"]],steps:["五花肉切方块冷水下锅焯水捞出","锅里放少许油下冰糖小火炒糖色","糖色变深起泡下五花肉翻炒上色","加料酒、生抽、老抽、郫县豆瓣酱炒匀","加开水没过肉，放八角、干辣椒、姜片","大火烧开转小火炖40分钟，大火收汁即可"]},
+    notspicy:{note:"💡 不辣版纯糖色上色，咸甜适口，老少皆宜",ingredients:[["五花肉","500g"],["冰糖","40g"],["生抽","2勺"],["老抽","1勺"],["料酒","2勺"],["八角","2个"],["桂皮","1小块"],["姜片","适量"],["葱段","适量"]],steps:["五花肉切方块冷水下锅焯水捞出","锅里放少许油下冰糖小火炒糖色","糖色变深起泡下五花肉翻炒上色","加料酒、生抽、老抽炒匀","加开水没过肉，放八角、桂皮、姜片、葱段","大火烧开转小火炖45分钟，大火收汁即可"]}},
+  {name:"麻婆豆腐",emoji:"🥘",wiki:"Mapo_doufu",time:"20分钟",serves:"2人份",rating:"8.6",desc:"麻辣鲜香烫，川菜灵魂。不辣版做成家常烧豆腐，同样下饭。",
+    mild:{note:"💡 正宗麻婆豆腐：麻、辣、烫、香、酥、嫩、鲜",ingredients:[["嫩豆腐","1块"],["猪肉末","100g"],["郫县豆瓣酱","2勺"],["花椒粉","1勺"],["辣椒粉","1勺"],["蒜末","适量"],["葱花","适量"],["淀粉","适量"]],steps:["豆腐切方块焯水2分钟去豆腥","热锅冷油下肉末炒散变色","加郫县豆瓣酱、辣椒粉炒出红油","加一碗清水烧开下豆腐煮3分钟","淀粉勾芡让汤汁包裹豆腐","出锅撒花椒粉和葱花"]},
+    notspicy:{note:"💡 不辣版家常烧豆腐：咸鲜滑嫩，孩子也爱吃",ingredients:[["嫩豆腐","1块"],["猪肉末","100g"],["生抽","2勺"],["蚝油","1勺"],["蒜末","适量"],["葱花","适量"],["淀粉","适量"],["白胡椒粉","少许"]],steps:["豆腐切方块焯水2分钟去豆腥","热锅冷油下肉末炒散变色","加蒜末、生抽、蚝油炒香","加一碗清水烧开下豆腐煮3分钟","淀粉勾芡让汤汁包裹豆腐","出锅撒白胡椒粉和葱花"]}}
+];
+
+/* ============ 状态 ============ */
+let state={quoteIdx:0,showIdx:0,sentenceIdx:0,spice:'mild',recipeIdx:0,investWeek:0,lessonIdx:0,xhsIdx:0,notes:[],currentWord:'',currentMeaning:''};
+
+/* ============ 工具 ============ */
+function $(id){return document.getElementById(id);}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+function dayOfYear(){const d=new Date();const start=new Date(d.getFullYear(),0,0);return Math.floor((d-start)/86400000);}
+function fmtDate(){const d=new Date();const wk=['日','一','二','三','四','五','六'];return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日 · 星期${wk[d.getDay()]}`;}
+function fmtTime(s){if(isNaN(s))return '0:00';const m=Math.floor(s/60);const ss=Math.floor(s%60);return m+':'+(ss<10?'0':'')+ss;}
+function stripHtml(s){return (s||'').replace(/<[^>]+>/g,'');}
+
+/* ============ 语音朗读引擎（Web Speech API · 全板块通用音源） ============ */
+const synth = window.speechSynthesis;
+let ttsVoices = [];
+let showRate = 1;          // 美剧朗读倍速
+let speakingBtn = null;    // 当前正在朗读的按钮
+function loadVoices(){ if(synth) ttsVoices = synth.getVoices(); }
+loadVoices();
+if(synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = loadVoices;
+function pickVoice(lang){
+  return ttsVoices.find(v=>v.lang===lang) || ttsVoices.find(v=>v.lang.indexOf(lang.split('-')[0])===0) || null;
+}
+function stopSpeak(){
+  if(synth && synth.speaking) synth.cancel();
+  if(speakingBtn){ speakingBtn.innerHTML = speakingBtn.dataset.ico || '🔊'; speakingBtn = null; }
+}
+function speakBtn(btn, text, lang, rate){
+  if(!synth){ toast('当前浏览器不支持语音朗读'); return; }
+  if(synth.speaking){ stopSpeak(); return; }   // 再点一次=停止
+  if(audio && !audio.paused) audio.pause();     // 朗读时暂停新闻音频
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang; u.rate = rate || 1;
+  const v = pickVoice(lang); if(v) u.voice = v;
+  u.onend = () => { if(speakingBtn){ speakingBtn.innerHTML = speakingBtn.dataset.ico || '🔊'; speakingBtn = null; } };
+  u.onerror = () => { if(speakingBtn){ speakingBtn.innerHTML = speakingBtn.dataset.ico || '🔊'; speakingBtn = null; } };
+  speakingBtn = btn; btn.dataset.ico = btn.innerHTML; btn.innerHTML = '⏸';
+  synth.speak(u);
+}
+function speakInvest(btn){
+  const allW=[...INVEST_PLAN[1].weeks,...INVEST_PLAN[2].weeks,...INVEST_PLAN[3].weeks];
+  const cur=allW[state.lessonIdx];
+  const txt = cur ? cur.w+'，'+cur.t+'。'+stripHtml(cur.lesson) : '课程加载中';
+  speakBtn(btn, txt, 'zh-CN', 1);
+}
+function speakXhs(btn){
+  const x = XHS_DATA[state.xhsIdx];
+  speakBtn(btn, x.title+'。完整文案示例：'+x.sampleCopy, 'zh-CN', 1);
+}
+function speakRecipe(btn){
+  const r = RECIPES[state.recipeIdx]; const v = state.spice==='mild' ? r.mild : r.notspicy;
+  let txt = r.name+'的做法。';
+  v.steps.forEach((s,i)=> txt += '第'+(i+1)+'步，'+s+'。');
+  speakBtn(btn, txt, 'zh-CN', 1);
+}
+function toggleShowSpeak(btn){
+  const s = SHOWS[state.showIdx].sentences[state.sentenceIdx];
+  speakBtn(btn, s.en, 'en-US', showRate);
+}
+
+/* ============ 导航 ============ */
+function go(page){
+  stopSpeak();closeSidebar();
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  $('page-'+page).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('open');}
+function closeSidebar(){document.querySelector('.sidebar').classList.remove('open');}
+document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+
+/* ============ 首页 ============ */
+function renderQuote(){$('quoteText').textContent=QUOTES[state.quoteIdx];$('homeDate').textContent=fmtDate();}
+function nextQuote(){state.quoteIdx=(state.quoteIdx+1)%QUOTES.length;renderQuote();}
+
+/* ============ 英语：素材切换 ============ */
+document.querySelectorAll('.eng-tab').forEach(t=>t.addEventListener('click',()=>{
+  stopSpeak();
+  document.querySelectorAll('.eng-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');
+  document.querySelectorAll('.eng-pane').forEach(p=>p.classList.remove('active'));
+  $('eng-'+t.dataset.eng).classList.add('active');
+}));
+
+/* ============ 英语：新闻音频播放器（真实 NPR 最新一期 + 倍速） ============ */
+const audio=$('audioPlayer');
+async function loadLatestNews(){
+  const feeds=['https://feeds.npr.org/500005/podcast.xml','https://feeds.npr.org/510318/podcast.xml'];
+  const proxies=[u=>u,u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),u=>'https://corsproxy.io/?'+encodeURIComponent(u)];
+  for(const feed of feeds){
+    for(const proxy of proxies){
+      try{
+        const res=await fetch(proxy(feed),{cache:'no-store'});
+        if(!res.ok)continue;
+        const txt=await res.text();
+        const doc=new DOMParser().parseFromString(txt,'text/xml');
+        const item=doc.querySelector('item');
+        if(!item)continue;
+        const enc=item.querySelector('enclosure');
+        if(!enc)continue;
+        const url=enc.getAttribute('url');
+        const title=item.querySelector('title')?item.querySelector('title').textContent:'NPR News';
+        const pub=item.querySelector('pubDate')?item.querySelector('pubDate').textContent:'';
+        audio.src=url;
+        $('epTitle').textContent=title;
+        $('epMeta').textContent='NPR News Now · 美式英语原速 · '+(pub?new Date(pub).toLocaleDateString('zh-CN'):'最新一期');
+        $('audioStatus').textContent='✅ 已加载最新一期，点击播放';
+        return;
+      }catch(e){}
+    }
+  }
+  loadFail();
+}
+function loadFail(){
+  $('epTitle').textContent='自动抓取失败';
+  $('epMeta').textContent='可手动粘贴音频直链播放';
+  $('audioFallback').style.display='block';
+  $('audioStatus').textContent='⚠️ 网络受限，请手动粘贴 mp3 链接';
+}
+function loadManualAudio(){
+  const v=$('audioInput').value.trim();
+  if(!v){toast('请输入音频链接');return;}
+  audio.src=v;
+  $('epTitle').textContent='自定义音频';
+  $('epMeta').textContent='手动加载 · '+v.split('/').pop();
+  $('audioStatus').textContent='✅ 已加载，点击播放';
+  toast('已加载音频');
+}
+function togglePlay(){if(!audio.src){toast('音频加载中…');return;}stopSpeak();if(audio.paused)audio.play();else audio.pause();}
+function seekAudio(d){if(audio.duration)audio.currentTime=Math.max(0,Math.min(audio.duration,audio.currentTime+d));}
+audio.addEventListener('play',()=>$('playBtn').textContent='⏸');
+audio.addEventListener('pause',()=>$('playBtn').textContent='▶');
+audio.addEventListener('ended',()=>$('playBtn').textContent='▶');
+audio.addEventListener('loadedmetadata',()=>{$('durTime').textContent=fmtTime(audio.duration);});
+audio.addEventListener('timeupdate',()=>{$('curTime').textContent=fmtTime(audio.currentTime);if(audio.duration)$('seekBar').value=(audio.currentTime/audio.duration*1000);});
+$('seekBar').addEventListener('input',()=>{if(audio.duration)audio.currentTime=($('seekBar').value/1000)*audio.duration;});
+document.querySelectorAll('.spd:not(.spd-show)').forEach(b=>b.addEventListener('click',()=>{
+  audio.playbackRate=parseFloat(b.dataset.s);
+  document.querySelectorAll('.spd:not(.spd-show)').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  toast('倍速 '+b.dataset.s+'×');
+}));
+document.querySelectorAll('.spd-show').forEach(b=>b.addEventListener('click',()=>{
+  showRate=parseFloat(b.dataset.s);
+  document.querySelectorAll('.spd-show').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+  if(synth&&synth.speaking)stopSpeak();
+  toast('朗读倍速 '+b.dataset.s+'×');
+}));
+
+/* ============ 英语：新闻精读（点词查义，真实词典 API） ============ */
+function renderNewsTranscript(){
+  const c=$('newsTranscript');c.innerHTML='';
+  NEWS_TRANSCRIPT.sentences.forEach((sen,i)=>{
+    const div=document.createElement('div');div.className='sentence';
+    const enHtml=sen.en.replace(/([A-Za-z']+)/g,'<span class="word" data-w="$1">$1</span>');
+    div.innerHTML=`<div class="en">${enHtml}</div><div class="zh">${sen.zh}</div>`;
+    div.addEventListener('click',e=>{if(e.target.classList.contains('word'))showWordPopup(e.target,e.target.dataset.w);});
+    c.appendChild(div);
+  });
+}
+
+/* ============ 英语：美剧精听 ============ */
+function renderShow(){
+  const s=SHOWS[state.showIdx];
+  $('showName').textContent=s.name;$('showMeta').textContent=s.meta;$('showLevel').textContent=s.level;
+  $('showPoster').textContent=s.poster;state.sentenceIdx=0;renderSentences();
+}
+function renderSentences(){
+  const s=SHOWS[state.showIdx];const list=$('sentenceList');list.innerHTML='';
+  s.sentences.forEach((sen,i)=>{
+    const div=document.createElement('div');div.className='sentence'+(i===state.sentenceIdx?' active':'');
+    const enHtml=sen.en.replace(/([A-Za-z']+)/g,'<span class="word" data-w="$1">$1</span>');
+    div.innerHTML=`<div class="en">${enHtml}</div><div class="zh">${sen.zh}</div>`;
+    div.addEventListener('click',e=>{
+      if(e.target.classList.contains('word')){showWordPopup(e.target,e.target.dataset.w);}
+      else{state.sentenceIdx=i;renderSentences();}
+    });
+    list.appendChild(div);
+  });
+  $('listenProgress').textContent=`${state.sentenceIdx+1} / ${s.sentences.length}`;
+  $('listenBar').style.width=((state.sentenceIdx+1)/s.sentences.length*100)+'%';
+  $('prevBtn').disabled=state.sentenceIdx===0;
+  $('nextBtn').disabled=state.sentenceIdx===s.sentences.length-1;
+}
+function prevSentence(){stopSpeak();if(state.sentenceIdx>0){state.sentenceIdx--;renderSentences();}}
+function nextSentence(){stopSpeak();const s=SHOWS[state.showIdx];if(state.sentenceIdx<s.sentences.length-1){state.sentenceIdx++;renderSentences();}}
+
+/* ============ 点词查义（本地词典 + 真实 dictionaryapi.dev） ============ */
+async function showWordPopup(el,word){
+  const w=word.toLowerCase().replace(/[^a-z]/g,'');state.currentWord=w;state.currentMeaning='';
+  $('wpWord').textContent=w;
+  $('wpPhonetic').textContent='查询中…';
+  $('wpMeaning').innerHTML='加载中…';
+  const pop=$('wordPopup');const r=el.getBoundingClientRect();let left=r.left;let top=r.bottom+8;
+  if(left+300>window.innerWidth)left=window.innerWidth-320;
+  if(top+200>window.innerHeight)top=r.top-210;
+  pop.style.left=left+'px';pop.style.top=top+'px';pop.style.display='block';
+  // 本地词典优先
+  if(DICT[w]){$('wpPhonetic').textContent=DICT[w].p;$('wpMeaning').textContent=DICT[w].m;state.currentMeaning=DICT[w].m;return;}
+  // 真实词典 API（免费、免 key、支持跨域）
+  try{
+    const res=await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+w);
+    if(res.ok){
+      const data=await res.json();
+      if(Array.isArray(data)&&data[0]){
+        const ph=data[0].phonetic||(data[0].phonetics||[]).find(p=>p.text)?.text||'';
+        const m=data[0].meanings?.[0];
+        const pos=m?.partOfSpeech||'';
+        const def=m?.definitions?.[0]?.definition||'无释义';
+        $('wpPhonetic').textContent=ph||'/—/';
+        $('wpMeaning').innerHTML=`<i style="color:var(--purple-deep)">${pos}</i> ${def}`;
+        state.currentMeaning=`${pos} ${def}`;
+        return;
+      }
+    }
+    $('wpPhonetic').textContent='/—/';$('wpMeaning').textContent='未找到释义';state.currentMeaning='（未找到释义）';
+  }catch(e){
+    $('wpPhonetic').textContent='/—/';$('wpMeaning').textContent='查询失败（需联网）';state.currentMeaning='（查询失败）';
+  }
+}
+document.addEventListener('click',e=>{const pop=$('wordPopup');if(!pop.contains(e.target)&&!e.target.classList.contains('word'))pop.style.display='none';});
+function saveWord(){
+  const w=state.currentWord;if(!w)return;
+  if(state.notes.some(n=>n.word===w)){toast('已经在笔记里啦');return;}
+  state.notes.push({word:w,meaning:state.currentMeaning||'（待补充）'});renderNotes();
+  toast('已收藏「'+w+'」');$('wordPopup').style.display='none';
+}
+function renderNotes(){
+  const list=$('notesList');$('noteCount').textContent=state.notes.length+' 个生词';
+  if(state.notes.length===0){list.innerHTML='<div class="empty-note">还没有收藏的生词，点击任意句子中的单词即可实时查义并收藏</div>';return;}
+  list.innerHTML='';
+  state.notes.forEach((n,i)=>{
+    const div=document.createElement('div');div.className='note-item';
+    div.innerHTML=`<span class="nw">${n.word}</span><span class="nm">${n.meaning}</span><span class="del" data-i="${i}">×</span>`;
+    div.querySelector('.del').addEventListener('click',()=>{state.notes.splice(i,1);renderNotes();});
+    list.appendChild(div);
+  });
+}
+
+/* ============ 投资 ============ */
+function renderInvest(){
+  const total=8,done=state.investWeek,pct=Math.round(done/total*100);
+  $('ringPct').textContent=pct+'%';
+  const circ=2*Math.PI*52;
+  $('ringFill').setAttribute('stroke-dasharray',circ);
+  $('ringFill').setAttribute('stroke-dashoffset',circ*(1-done/total));
+  const allW=[...INVEST_PLAN[1].weeks,...INVEST_PLAN[2].weeks,...INVEST_PLAN[3].weeks];
+  const cur=allW[Math.min(done,total-1)];const phase=done<4?1:done<6?2:3;
+  $('currentWeek').textContent=`当前：第${done+1}单元 · ${cur?cur.w:''}`;
+  $('currentTip').innerHTML=cur?('本周目标：'+cur.c):'🎉 三个月计划已完成！';
+  renderTimeline(phase);$('phaseLabel').textContent=INVEST_PLAN[phase].label;
+  document.querySelectorAll('.phase-tab').forEach(t=>t.classList.toggle('active',parseInt(t.dataset.phase)===phase));
+}
+function renderTimeline(phase){
+  const tl=$('timeline');const allW=[...INVEST_PLAN[1].weeks.map(w=>({...w,p:1})),...INVEST_PLAN[2].weeks.map(w=>({...w,p:2})),...INVEST_PLAN[3].weeks.map(w=>({...w,p:3}))];
+  const pw=allW.filter(w=>w.p===phase);const ps={1:0,2:4,3:6}[phase];tl.innerHTML='';
+  pw.forEach((w,i)=>{const gi=ps+i;const it=document.createElement('div');
+    const st=gi<state.investWeek?'done':(gi===state.investWeek?'current':'');it.className='tl-item '+st;
+    it.innerHTML=`<div class="tl-week">${w.w}</div><div class="tl-title">${w.t}</div><div class="tl-content">${w.c}</div>`;tl.appendChild(it);});
+}
+document.querySelectorAll('.phase-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.phase-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');
+  const p=parseInt(t.dataset.phase);renderTimeline(p);$('phaseLabel').textContent=INVEST_PLAN[p].label;
+}));
+function advanceWeek(){if(state.investWeek<8){state.investWeek++;renderInvest();toast('✅ 已完成本周学习！');}else{toast('🎉 计划已全部完成！');}}
+
+/* ============ 今日投资课（每日具体内容推送） ============ */
+const ALL_LESSONS=[...INVEST_PLAN[1].weeks,...INVEST_PLAN[2].weeks,...INVEST_PLAN[3].weeks];
+function renderTodayLesson(){
+  const cur=ALL_LESSONS[state.lessonIdx];
+  $('todayLessonTag').textContent=cur.w+' · '+cur.t;
+  $('todayLesson').innerHTML=cur.lesson;
+}
+function prevLesson(){stopSpeak();state.lessonIdx=(state.lessonIdx-1+ALL_LESSONS.length)%ALL_LESSONS.length;renderTodayLesson();window.scrollTo({top:0,behavior:'smooth'});}
+function nextLesson(){stopSpeak();state.lessonIdx=(state.lessonIdx+1)%ALL_LESSONS.length;renderTodayLesson();window.scrollTo({top:0,behavior:'smooth'});}
+
+/* ============ 小红书（真实封面图 via Wikipedia） ============ */
+async function loadCoverImage(q,el){
+  try{
+    const res=await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&gsrlimit=1&prop=pageimages&format=json&pithumbsize=600&origin=*`);
+    const data=await res.json();
+    const pages=data.query?.pages||{};const p=Object.values(pages)[0];
+    if(p&&p.thumbnail){el.style.backgroundImage=`linear-gradient(180deg,rgba(76,29,149,.25) 0%,rgba(76,29,149,.82) 100%), url('${p.thumbnail.source}')`;el.style.backgroundSize='cover';el.style.backgroundPosition='center';}
+  }catch(e){}
+}
+function renderXhs(){
+  const idx=dayOfYear()%XHS_DATA.length;state.xhsIdx=idx;const x=XHS_DATA[idx];
+  $('xhsDate').textContent=fmtDate();
+  $('cvTag').textContent=x.tag;$('cvTitle').textContent=x.title;$('cvSub').textContent=x.sub;
+  loadCoverImage(x.q,$('coverPreview'));
+  $('bdCover').innerHTML=x.cover;$('bdTitle').innerHTML=x.title_f;$('bdContent').innerHTML=x.content;
+  $('bdCopy').innerHTML=x.copy;$('bdTag').innerHTML=x.tag_b;
+  $('xhsCopy').textContent=x.sampleCopy;
+  const tpl=$('xhsTemplates');tpl.innerHTML='';
+  x.titleTemplates.forEach(t=>{const row=document.createElement('div');row.className='tpl-row';row.innerHTML=`<span class="tpl-formula">${t.t}</span><span class="tpl-ex">${t.ex}</span>`;tpl.appendChild(row);});
+  $('xhsAction').innerHTML=`<span class="ab-icon">🎯</span><span class="ab-text">${x.action}</span>`;
+}
+
+/* ============ 好好吃饭（真实菜品图 via Wikipedia） ============ */
+async function loadFoodImage(wikiTitle){
+  const img=$('recipeImgEl'),emoji=$('recipeEmoji');
+  img.style.display='none';emoji.style.display='block';
+  try{
+    const res=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(wikiTitle)}&prop=pageimages&format=json&pithumbsize=700&origin=*`);
+    const data=await res.json();const pages=data.query?.pages||{};const p=Object.values(pages)[0];
+    if(p&&p.thumbnail){
+      img.onload=()=>{img.style.display='block';emoji.style.display='none';};
+      img.onerror=()=>{img.style.display='none';emoji.style.display='block';};
+      img.src=p.thumbnail.source;
+    }
+  }catch(e){}
+}
+function renderRecipe(){
+  const idx=dayOfYear()%RECIPES.length;state.recipeIdx=idx;const r=RECIPES[idx];
+  $('recipeName').textContent=r.name;$('recipeEmoji').textContent=r.emoji;$('recipeTime').textContent=r.time;
+  $('recipeServes').textContent=r.serves;$('recipeRating').textContent=r.rating;$('recipeDesc').textContent=r.desc;
+  loadFoodImage(r.wiki);renderSpice();
+}
+function renderSpice(){
+  const r=RECIPES[state.recipeIdx];const v=state.spice==='mild'?r.mild:r.notspicy;
+  $('spiceNote').textContent=v.note;
+  document.querySelectorAll('.spice-toggle button').forEach(b=>b.classList.toggle('active',b.dataset.spice===state.spice));
+  const ing=$('ingredients');ing.innerHTML='';
+  v.ingredients.forEach(([n,a])=>{const row=document.createElement('div');row.className='ing-row';row.innerHTML=`<span class="ing-name">${n}</span><span class="ing-amount">${a}</span>`;ing.appendChild(row);});
+  const st=$('steps');st.innerHTML='';
+  v.steps.forEach(s=>{const div=document.createElement('div');div.className='step';div.innerHTML=`<div class="step-num"></div><div class="step-text">${s}</div>`;st.appendChild(div);});
+}
+function switchSpice(s){stopSpeak();state.spice=s;renderSpice();}
+
+/* ============ 初始化 ============ */
+function init(){
+  $('dateChip').textContent=fmtDate();
+  state.quoteIdx=dayOfYear()%QUOTES.length;
+  state.showIdx=dayOfYear()%SHOWS.length;
+  state.lessonIdx=dayOfYear()%ALL_LESSONS.length;
+  renderQuote();renderNewsTranscript();renderShow();renderInvest();renderTodayLesson();renderXhs();renderRecipe();renderNotes();
+  loadLatestNews();
+}
+init();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+</script>
 </body>
 </html>
